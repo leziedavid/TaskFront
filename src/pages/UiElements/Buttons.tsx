@@ -5,7 +5,7 @@ import Breadcrumb from '../../components/Breadcrumbs/Breadcrumb';
 const Buttons = () => {
   return (
     <>
-      <Breadcrumb pageName="Buttons" />
+      <Breadcrumb pageName="Buttons" pageTilte={''} pageElement={undefined} />
 
       {/* <!-- Normal Button Items --> */}
       <div className="mb-10 rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">

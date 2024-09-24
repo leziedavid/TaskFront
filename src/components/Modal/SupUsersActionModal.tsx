@@ -5,6 +5,7 @@ interface ModalProps {
     actionMessage:string;
     onDeleteMessage:string;
     onCloseMessage:string;
+
     id: string | undefined;
     onDelete: (id: string | null) => void;
     isOpen: boolean;

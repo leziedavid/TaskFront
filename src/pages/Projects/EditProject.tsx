@@ -13,12 +13,7 @@ import { UserState } from '../../interfaces/UserState';
 import { differenceInDays, parseISO } from 'date-fns';
 import Loading from '../../common/Loader/Loading';
 import { getProjectByCodes, updateProject } from '../../services/ProjectService';
-
-interface ApiResulte {
-    code: number;
-    data: string;
-    message: string;
-}
+import { getUserIdFromToken } from '../../services/ApiService';
 
 const EditProject: React.FC = () => {
     const [libelle, setLibelle] = useState('');
@@ -48,8 +43,42 @@ const EditProject: React.FC = () => {
     const navigate = useNavigate();
 
     const handleAddProject = () => {
-        navigate('/auth/projets');
+        navigate('/auth/Admin/projets');
     };
+
+    // Utilisation de useState pour stocker l'ID de l'utilisateur
+    const [userId, setUserId] = useState<number | null>(null);
+    // Appel du service pour récupérer l'ID de l'utilisateur à partir du token
+    const fetchUserId = async () => {
+
+                try {
+                    
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        const response = await getUserIdFromToken(token);
+    
+                        if (response.code === 200 && response.data) {
+    
+                            setUserId(response.data);
+                        } else {
+    
+                            toast.error("Erreur lors de la récupération de l'ID utilisateur.");
+                        }
+                    } else {
+    
+                        toast.error("Token introuvable dans le localStorage.");
+                    }
+                } catch (error) {
+    
+                    console.error('Erreur lors de la récupération de l\'ID utilisateur :', error);
+                    toast.error("Erreur lors de la récupération de l'ID utilisateur.");
+                    
+                }
+            };
+
+    useEffect(() => {
+        fetchUserId(); // Appel de la fonction au montage du composant
+    }, []); // Le tableau vide [] assure que useEffect ne se déclenche qu'une fois, équivalent à componentDidMount
 
     const projectByCodes = async (code: string) => {
         try {
@@ -119,9 +148,8 @@ const EditProject: React.FC = () => {
             formData.append('prioColor', prioColor);
             formData.append('stateColor', stateColor);
             formData.append('progress', '0');
-            if (userid !== null) {
-                formData.append('userId', "1");
-            }
+            formData.append('userId', userId!.toString());
+
             const response = await updateProject(id!, formData);
             toast.success("Projet mis à jour avec succès");
 
@@ -153,14 +181,8 @@ const EditProject: React.FC = () => {
                                 </label>
 
                                 <div className="mb-5">
-                                    <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="Username">
-                                        Nom du projet {Department}
-                                    </label>
-                                    <input
-                                        value={libelle}
-                                        onChange={(event) => {
-                                            setLibelle(event.target.value);
-                                        }}
+                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="Username"> Nom du projet  <span className="text-red-700"> * </span> </label>
+                                    <input value={libelle} onChange={(event) => { setLibelle(event.target.value); }}
                                         className="w-full rounded-lg border border-stroke py-2 px-4 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black"
                                         type="text"
                                         name="Libelet"
@@ -169,6 +191,7 @@ const EditProject: React.FC = () => {
                                 </div>
 
                                 <div className="mb-5">
+                                <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Priorité <span className="text-red-700"> * </span> </label>
                                     <SelectPriorite
                                         placeholder1={placeholder1}
                                         setPriority={setPriority}
@@ -178,18 +201,17 @@ const EditProject: React.FC = () => {
                                 </div>
 
                                 <div className="mb-5">
+                                <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Status <span className="text-red-700"> * </span> </label>
                                     <SelectState placeholder2={placeholder2} setState={setState}   defaultDisabled={false} stateValue={state} />
                                 </div>
 
                                 <div className="mb-5 flex flex-col gap-5.5 sm:flex-row">
                                     <div className="w-full sm:w-1/2">
-                                        <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="fullName">
-                                            Date de debut
-                                        </label>
+                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Date de debut <span className="text-red-700"> * </span> </label>
                                         <div className="relative">
                                             <input
                                                 className="w-full rounded border border-stroke py-2 pl-11.5 pr-4.5 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black"
-                                                type="date"
+                                                type="datetime-local"
                                                 placeholder=""
                                                 value={dateDebut}
                                                 onChange={(e) => setDateDebut(e.target.value)}
@@ -198,12 +220,10 @@ const EditProject: React.FC = () => {
                                     </div>
 
                                     <div className="w-full sm:w-1/2">
-                                        <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="fullName">
-                                            Date de fin
-                                        </label>
+                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Date de fin <span className="text-red-700"> * </span> </label>
                                         <input
                                             className="w-full rounded border border-stroke py-2 px-4.5 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black"
-                                            type="date"
+                                            type="datetime-local"
                                             placeholder=""
                                             value={dateFin}
                                             onChange={(e) => setDateFin(e.target.value)}
@@ -220,6 +240,7 @@ const EditProject: React.FC = () => {
                                 )}
 
                                 <div className="mb-5">
+                                <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Description <span className="text-red-700"> * </span> </label>
                                     <QuillEditor value={description} onChange={setDescription} />
                                 </div>
 

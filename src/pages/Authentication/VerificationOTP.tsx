@@ -16,7 +16,7 @@ const VerificationOTP: React.FC = () => {
     message: string;
   }
 
-  const [email, setEmail] = useState("lezie@gmail.com");
+  const [email, setEmail] = useState(localStorage.getItem('link'));
   const navigate = useNavigate();
   const [response, setResponse] = useState<BaseResponse<UserData> | null>(null);
   const [response2, setResponse2] = useState<BaseResponse<UserData> | null>(null);
@@ -80,7 +80,7 @@ const VerificationOTP: React.FC = () => {
       }
       SetLoad(true);
     try {
-      const apiResponse = await verifyOTP(email,otpCode);
+      const apiResponse = await verifyOTP(email!,otpCode);
       setResponse(apiResponse);
     } catch (error) {
       console.error('Sign up failed:', error);
@@ -89,7 +89,7 @@ const VerificationOTP: React.FC = () => {
 
   const Validate = async () => {
     try {
-      const apiResponse = await sendOTP(email);
+      const apiResponse = await sendOTP(email!);
       // setResponse(apiResponse);
       toast.success("Veuillez consulter votre email, un code de validation vous a été transmis. Ce code expirera dans 3 minutes.");
     } catch (error) {
@@ -113,7 +113,7 @@ const VerificationOTP: React.FC = () => {
                 <span className="mb-10 block font-medium">
                   S'il vous plait entrez le code à 4 chiffres envoyé à{' '}
                   <button className="text-primary">{email}</button> {' '}
-                    <h1 className="text-center  mb-3 text-1xl font-bold text-black text-[#cd2f2f] dark:text-white sm:text-title-xl1">
+                    <h1 className="text-center  mb-3 text-1xl font-bold text-[#cd2f2f] dark:text-white sm:text-title-xl1">
                       Ce code expire dans 3 minutes.
                   </h1>
                 </span>

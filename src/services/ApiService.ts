@@ -1,6 +1,7 @@
 // src/services/ApiService.ts
 import { toast } from 'react-toastify';
 import { BaseResponse } from '../interfaces/ApiResponse';
+import { User } from '../interfaces/Global';
 
 const BASE_URL = 'http://localhost:8090/api/v1';
 
@@ -128,3 +129,67 @@ export const changePassword = async (email: string, password: string,otp: string
         throw error;
     }
 };
+export const logout = async (token: string): Promise<BaseResponse<any>> => {
+    try {
+        const response = await fetch(`${BASE_URL}/auth/logout`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token }),
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to logout');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error during logout:', error);
+        throw error;
+    }
+};
+
+// Service pour récupérer l'ID de l'utilisateur à partir du token JWT
+export const getUserIdFromToken = async (token: string): Promise<BaseResponse<number>> => {
+    try {
+        const response = await fetch(`${BASE_URL}/auth/userid`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to get user ID');
+        }
+
+        return await response.json(); // Renvoie la réponse JSON parsée
+    } catch (error) {
+        console.error('Error getting user ID:', error);
+        throw error;
+    }
+};
+
+export const getUserInfoFromToken = async (token: string): Promise<BaseResponse<User>> => {
+    try {
+        const response = await fetch(`${BASE_URL}/auth/userinfo`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to get user info');
+        }
+
+        return await response.json(); // Renvoie la réponse JSON parsée
+    } catch (error) {
+        console.error('Error getting user info:', error);
+        throw error;
+    }
+};
+

@@ -58,8 +58,8 @@ const ChangePassword: React.FC = () => {
       }
       
       try {
-        const apiResponse = await changePassword(email,password,otp);
-              setResponse(apiResponse);
+        const apiResponse = await changePassword(email ?? "",password,otp ?? "");
+          setResponse(apiResponse);
         toast.success("Veuillez consulter votre email, un code de validation vous a été transmis. Ce code expirera dans 3 minutes.");
       } catch (error) {
         console.error('Sign up failed:', error);

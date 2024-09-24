@@ -10,11 +10,13 @@ import { deleteProject ,changePriority,changeState} from '../../services/Project
 
 import ActionModal from '../../components/Modal/ActionModal';
 
-import { Projects } from '../../interfaces/Projects';
+// import { Projects } from '../../interfaces/Projects';
 import UserListeModal from '../Modal/UserListeModal';
 
+import { Project } from '../../interfaces/Global';
+import DateConverter from '../DateConverter';
 interface ProjectProps {
-    response: Projects[] | null;
+    response: Project[] | null;
     fetchProjects: () => void;
 }
 
@@ -53,7 +55,7 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
 
     const [projectsId, setProjectsId] = useState<number | null>(null);
     const [projectsCode, setProjectsCode] = useState<string | null>(null);
-    const [responses, setResponses] = useState<BaseResponse<Projects> | null>(null);
+    const [responses, setResponses] = useState<BaseResponse<Project> | null>(null);
 
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -62,7 +64,7 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
         setProjectsCode(codes);
         setProjectsId(id);
         setIsModalOpen(true);
-        setModalOpen(true);
+        setModalOpen(false);
     };
     const openModalUsers = (id: number,codes:string) => {
         setId(id);
@@ -99,21 +101,44 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
         }
         closeModal();
     };
+
+
+    useEffect(() => {
+
+        if(selectedPriority){
+            changeProjectPriority();
+        }
+        
+        }, [selectedPriority]);
+    
+    
+        useEffect(() => {
+    
+            if(selectedStates){
+            changeStateProject();
+            }
+            }, [selectedStates]);
     
 
     const SelectedPriority = (id: number,priority :string) => {
         setId(id);
         setSelectedPriority(priority);
     };
+
     const changeProjectPriority = async () => {
 
-        console.log(`change Project Priority: ${id}`);
+        console.log(`change Project Priority: ${selectedColors}`);
+        console.log(`change Project Priority: ${selectedPriority}`);
 
-        if (selectedPriority == "ELEVEE") {
+        if (selectedPriority === "ELEVEE") {
             setSelectedColors('#033F73');
-        } else if (selectedPriority == "MOYENNE") {
+        }
+
+        if (selectedPriority === "MOYENNE") {
             setSelectedColors('#F27F1B');
-        } else if (selectedPriority == "FAIBLE") {
+
+        }
+        if (selectedPriority === "FAIBLE") {
             setSelectedColors('#F27F1B');
         }
         
@@ -156,8 +181,6 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
         } else if (selectedStates == "TERMINER") {
             setSelectedColors('#012340');
         }
-
-        console.log(selectedColors);
         
         try {
 
@@ -183,23 +206,6 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
         }
 
     };
-
-    useEffect(() => {
-
-    if(selectedPriority){
-        changeProjectPriority();
-    }
-    
-    }, [selectedPriority]);
-
-
-    useEffect(() => {
-
-        if(selectedStates){
-            changeStateProject();
-        }
-        
-        }, [selectedStates]);
 
 
     return (
@@ -251,7 +257,7 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
                                                             {priorities.map((priority, idx) => (
 
                                                                 <li key={idx} className="border-b border-[#f0f0f0] last:border-b-0">
-                                                                    <a onClick={() => { SelectedPriority(project.projectId ,priority) }} href="#" className="space-x-2 flex px-4 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                                    <a onClick={() => { SelectedPriority(project.projectId ,priority) }} href="#" className="cursor-pointer  space-x-2 flex px-4 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                                                         <span>  {priority} </span>
                                                                     </a>
                                                                 </li>
@@ -342,7 +348,7 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
                                                     <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
 
                                                         <li className="border-b border-[#f0f0f0] last:border-b-0">
-                                                            <Link to={`/auth/add/modifiction/${project.projectCodes}`}  className="space-x-2 flex px-4 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                            <Link to={`/auth/Admin/edit/projets/${project.projectCodes}`}  className="space-x-2 flex px-4 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                                                     <span>
                                                                         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                             <path d="M12.6666 13.3336H3.33329C3.15648 13.3336 2.98691 13.4038 2.86188 13.5288C2.73686 13.6538 2.66662 13.8234 2.66662 14.0002C2.66662 14.177 2.73686 14.3466 2.86188 14.4716C2.98691 14.5967 3.15648 14.6669 3.33329 14.6669H12.6666C12.8434 14.6669 13.013 14.5967 13.138 14.4716C13.263 14.3466 13.3333 14.177 13.3333 14.0002C13.3333 13.8234 13.263 13.6538 13.138 13.5288C13.013 13.4038 12.8434 13.3336 12.6666 13.3336ZM3.33329 12.0002H3.39329L6.17329 11.7469C6.47782 11.7166 6.76264 11.5824 6.97995 11.3669L12.98 5.3669C13.2128 5.12088 13.3387 4.79257 13.3299 4.45392C13.3212 4.11527 13.1786 3.7939 12.9333 3.56023L11.1066 1.73356C10.8682 1.50963 10.5558 1.38114 10.2288 1.37253C9.90187 1.36393 9.58314 1.47581 9.33329 1.6869L3.33329 7.6869C3.1178 7.90421 2.98362 8.18903 2.95329 8.49356L2.66662 11.2736C2.65764 11.3712 2.67031 11.4696 2.70373 11.5618C2.73715 11.654 2.79049 11.7377 2.85995 11.8069C2.92225 11.8687 2.99612 11.9176 3.07735 11.9507C3.15857 11.9839 3.24555 12.0007 3.33329 12.0002ZM10.18 2.6669L12 4.4869L10.6666 5.7869L8.87995 4.00023L10.18 2.6669Z" fill="#033F73" />
@@ -355,7 +361,7 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
 
 
                                                         <li className="border-b border-[#f0f0f0] last:border-b-0">
-                                                        <Link to={`/auth/detail/projet/${project.projectCodes}`}  className="space-x-2 flex px-4 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
+                                                        <Link to={`/auth/Admin/detail/projets/${project.projectCodes}`}  className="space-x-2 flex px-4 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                                                                 <span>
                                                                     <svg className="" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                         <path d="M14.3626 7.36301C14.5653 7.64701 14.6666 7.78967 14.6666 7.99967C14.6666 8.21034 14.5653 8.35234 14.3626 8.63634C13.4519 9.91367 11.1259 12.6663 7.99992 12.6663C4.87325 12.6663 2.54792 9.91301 1.63725 8.63634C1.43459 8.35234 1.33325 8.20967 1.33325 7.99967C1.33325 7.78901 1.43459 7.64701 1.63725 7.36301C2.54792 6.08567 4.87392 3.33301 7.99992 3.33301C11.1266 3.33301 13.4519 6.08634 14.3626 7.36301Z" stroke="black" stroke-opacity="0.6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
@@ -380,8 +386,7 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
                                                         </li>
 
                                                         <li className="border-b border-[#f0f0f0] last:border-b-0">
-                                                            <a onClick={() => openModal(project.projectId,project.projectCodes)} className="space-x-2 flex px-4 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                                                                
+                                                            <a onClick={() => openModal(project.projectId,project.projectCodes)} className="space-x-2 flex px-4 py-1.5 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white cursor-pointer">
                                                                 <span>
                                                                     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                                         <path d="M4.00004 12.6667C4.00004 13.4 4.60004 14 5.33337 14H10.6667C11.4 14 12 13.4 12 12.6667V4.66667H4.00004V12.6667ZM12.6667 2.66667H10.3334L9.66671 2H6.33337L5.66671 2.66667H3.33337V4H12.6667V2.66667Z" fill="#C62828" />
@@ -406,13 +411,13 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
 
                                                 <div className="flex flex-col items-start pl-4">
 
-                                                    <Link to={`/auth/detail/projet/${project.projectCodes}`} >
+                                                    <Link to={`/auth/Admin/detail/projets/${project.projectCodes}`} >
                                                         <h6 className="mb-3 text-[14px] md:text-[16px] font-semibold text-black dark:text-white dark:hover:text-primary">
                                                             {project.projectName}
                                                         </h6>
                                                     </Link>
 
-                                                    <Link  to={`/auth/task/add/${project.projectCodes}`}  >
+                                                    {/* <Link  to={`/auth/task/add/${project.projectCodes}`}  >
                                                         <p className="space-x-2 flex text-sm font-bold mb-4">
                                                             <div>
                                                                 3 Tâches
@@ -421,7 +426,7 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
                                                                 <path d="M2.66667 0.666992H9.33333V2.00033H12V8.00033H10.6667V3.33366H9.33333V4.66699H2.66667V3.33366H1.33333V14.0003H6V15.3337H0V2.00033H2.66667V0.666992ZM4 3.33366H8V2.00033H4V3.33366ZM11.3333 9.33366V12.0003H14V13.3337H11.3333V16.0003H10V13.3337H7.33333V12.0003H10V9.33366H11.3333Z" fill="black" fill-opacity="0.6" />
                                                             </svg>
                                                         </p>
-                                                    </Link>
+                                                    </Link> */}
 
                                                 </div>
                                                 
@@ -430,14 +435,14 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
 
                                         <p>
 
-                                            <div onClick={() => openModalUsers(project.projectId,project.projectCodes)} className="flex justify-between items-center">
+                                            <div className="flex justify-between items-center">
                                                 {/* Div à gauche */}
                                                 <div className="flex items-center">
                                                     <h3 className="pl-0 text-[14px] md:text-[15px] font-semibold text-black dark:text-white">{project.progress} %</h3>
                                                 </div>
 
                                                 {/* Div à droite */}
-                                                <div   className="flex pl-3 md:pl-10 lg:pl-20 xl:pl-30">
+                                                <div  onClick={() => openModalUsers(project.projectId,project.projectCodes)}  className="flex pl-3 md:pl-10 lg:pl-20 xl:pl-30">
 
                                                     <button className="h-9 w-5 border-0 border-white dark:border-boxdark">
                                                         <img src={UserOne} alt="User" />
@@ -457,16 +462,19 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
                                             <SkillBar level={project.progress} color="#038C4C" />
                                         </p>
 
-                                        <div className="flex">
-                                            <span className=" whitespace-nowrap inline-block bg-gray-200 rounded-full px-0 py-1 font-semibold text-gray-700 mr-2 mb-0 text-[12px] md:text-[10px]">
-                                                <span className='text-black text-sm whitespace-nowrap'> Duré:</span> 02-03-24 au 01-04-24
+                                        <div className="flex items-center">
+
+                                            <span  className=" whitespace-nowrap inline-block bg-gray-200 rounded-full px-0 font-semibold text-gray-700 mr-2 mb-0 text-[12px] md:text-[10px]">
+                                                <svg width="18" height="18" viewBox="0 0 13 12" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-4 h-4 inline-block align-middle">
+                                                    <path d="M9 6H6.5V8.5H9V6ZM8.5 0.5V1.5H4.5V0.5H3.5V1.5H3C2.445 1.5 2.005 1.95 2.005 2.5L2 9.5C2 10.05 2.445 10.5 3 10.5H10C10.55 10.5 11 10.05 11 9.5V2.5C11 1.95 10.55 1.5 10 1.5H9.5V0.5H8.5ZM10 9.5H3V4H10V9.5Z" fill="black" fillOpacity="0.56" />
+                                                </svg>
+                                                <DateConverter dateStr={project.projectStartDate}/> au <DateConverter dateStr={project.projectEndDate}/>
                                             </span>
-                                            <span className="inline-block bg-gray-200 rounded-md shadow-sm px-5 py-1 font-semibold text-gray-700 mr-0 mb-0 text-[10px] md:text-[12px]">
-                                                24 Jours
+
+                                            <span className="inline-block bg-gray-200 rounded-md shadow-sm px-5 py-1 font-semibold text-gray-700 mr-0 mb-0 text-[8px] md:text-[10px]">
+                                                {project.projectNombreJours} Jours
                                             </span>
                                         </div>
-
-
 
                                 </div>
 
@@ -475,11 +483,7 @@ const CardProject: React.FC<ProjectProps> = ({ response, fetchProjects  }) => {
                         ))
 
                     ) : (
-                        <div className=" justify-center items-center ">
-                        <div className="bg-white p-6 rounded shadow-lg">
-                            <p className="text-lg text-center text-gray-800">Aucun projet trouvé </p>
-                        </div>
-                        </div>
+                        <div className="w-full col-span-3 bg-white p-6 rounded shadow-lg"> Aucun projet trouvé </div>
 
                     )}
 

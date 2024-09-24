@@ -19,8 +19,6 @@ const AddFilesCard: React.FC<AddFilesCardProps> = ({fetchProjectDetails,id}) => 
     const [fileObjects, setFileObjects] = useState<FileObject[]>([{ title: '', file: null }]);
 
     const handleDeleteTask = async () => {
-
-        console.log(`Deleting project with ID: ${id}`);
         try {
             if (id) {
                 fetchProjectDetails(id);

@@ -68,8 +68,9 @@ const AddModalLeaders: React.FC<AddModalLeadersProps> = ({
                 const apiResponse = await assignUsersToProject(codes, formData);
 
                 if(apiResponse.code===200){
+                    
                     toast.success("Les utilisateur ont été ajouter a l'équipe du projet avec succès");
-                    fetchProjectDetails(codes);
+                    fetchProjectDetails(codes!);
                     onClose();
                 }else{
                     toast.error("Erreur lors de l'assignation des utilisateurs au projet:");
@@ -118,7 +119,7 @@ const AddModalLeaders: React.FC<AddModalLeadersProps> = ({
 
 
                                 <div className="mb-10">
-                                    <SelectDepartment setDepartment={setDepartment} />
+                                    <SelectDepartment setDepartment={setDepartment} departments={null} />
                                 </div>
 
                                 {Department ? (
@@ -129,10 +130,7 @@ const AddModalLeaders: React.FC<AddModalLeadersProps> = ({
                                     <div className=""> </div>
                                 )}
 
-                                {setTablegenerate.length > 0 && <TableLeaderSelecte
-                                    setTablegenerate={setTablegenerate}
-                                    Tablegenerate={Tablegenerate}
-                                    setDataGenerated={setDataGenerated} />}
+                                {setTablegenerate.length > 0 && <TableLeaderSelecte  setTablegenerate={setTablegenerate} Tablegenerate={Tablegenerate} setDataGenerated={setDataGenerated} />}
 
                             </div>
 

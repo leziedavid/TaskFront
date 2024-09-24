@@ -33,7 +33,7 @@ const SkillBar: React.FC<SkillProps> = ({ level, color }) => {
     };
 
     return (
-        <div className="mb-4">
+        <div className="">
             <div className="h-1 bg-[#EDEDED] rounded-full">
                 <div className="h-full rounded-full"
                     style={{

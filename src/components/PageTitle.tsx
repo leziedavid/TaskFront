@@ -6,13 +6,14 @@ interface PageTitleProps {
 }
 
 const PageTitle: React.FC<PageTitleProps> = ({ title }) => {
+  
   const location = useLocation();
 
   useEffect(() => {
     document.title = title;
   }, [location, title]);
 
-  return null; // This component doesn't render anything
+  return null;
 };
 
 export default PageTitle;

@@ -1,11 +1,26 @@
 // src/services/ApiService.ts
 import { toast } from 'react-toastify';
 import { BaseResponse } from '../interfaces/ApiResponse';
-
+import { Project } from '../interfaces/Global';
+import { Department } from '../interfaces/Global';
 const BASE_URL = 'http://localhost:8090/api/v1';
 
 
-export const getAllUsersByDepartment = async (department: string) => {
+
+export const getAllUsersByMultipleDepartment = async (department: any) => {
+    try {
+        
+        const response = await fetch(`${BASE_URL}/departments/users?ids=${department}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch departments');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching departments:', error);
+        throw error;
+    }
+};
+export const getAllUsersByDepartment = async (department: any) => {
     try {
         const response = await fetch(`${BASE_URL}/departments/${department}/users`);
         if (!response.ok) {
@@ -20,6 +35,7 @@ export const getAllUsersByDepartment = async (department: string) => {
 
 export const getAllDepartments = async () => {
     try {
+
         const response = await fetch(`${BASE_URL}/departments/getAllDepartments`);
         if (!response.ok) {
             throw new Error('Failed to fetch departments');
@@ -30,7 +46,6 @@ export const getAllDepartments = async () => {
         throw error;
     }
 };
-
 
 export const SaveProject = async (data: FormData): Promise<BaseResponse<any>> => {
     try {
@@ -92,9 +107,112 @@ export const addNewsFile = async (data: FormData): Promise<BaseResponse<any>> =>
     
 };
 
-export const getAllProjects = async () => {
+
+export const getAllProjects = async (
+    page: number = 0,
+    size: number = 10,
+    sortBy: string = 'projectCreatedAt'
+): Promise<BaseResponse<Project[]>> => {
+    const token = localStorage.getItem('token');
+
+    // Construire l'URL avec les paramètres de pagination et de tri
+    const url = new URL(`${BASE_URL}/projects/getAllProjects`);
+    url.searchParams.append('page', page.toString());
+    url.searchParams.append('size', size.toString());
+    url.searchParams.append('sortBy', sortBy);
+
     try {
-        const response = await fetch(`${BASE_URL}/projects/getAllProjects`);
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
+                'Content-Type': 'application/json',
+            },
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch projects');
+        }
+        
+        const data: BaseResponse<Project[]> = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        throw error;
+    }
+};
+
+export const searchProjects = async (
+    projectName?: string,
+    page: number = 0,
+    size: number = 10,
+    sortBy: string = 'projectCreatedAt'
+): Promise<BaseResponse<Project[]>> => {
+    const token = localStorage.getItem('token');
+
+    // Construire l'URL avec les paramètres de recherche, pagination et tri
+    const url = new URL(`${BASE_URL}/projects/search`);
+    if (projectName) {
+        url.searchParams.append('projectName', projectName);
+    }
+    url.searchParams.append('page', page.toString());
+    url.searchParams.append('size', size.toString());
+    url.searchParams.append('sortBy', sortBy);
+
+    try {
+        const response = await fetch(url.toString(), {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
+                'Content-Type': 'application/json',
+            },
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch projects');
+        }
+        
+        const data: BaseResponse<Project[]> = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        throw error;
+    }
+};
+
+export const getAllProjects2 = async () => {
+    const token = localStorage.getItem('token');
+    try {
+        
+        const response = await fetch(`${BASE_URL}/projects/getAllProjects`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
+                'Content-Type': 'application/json',
+            },
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch projects');
+        }
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching projects:', error);
+        throw error;
+    }
+};
+
+export const projectsStatistics = async () => {
+    const token = localStorage.getItem('token');
+    try {
+        
+        const response = await fetch(`${BASE_URL}/projects/statistics`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
+                'Content-Type': 'application/json',
+            },
+        });
         
         if (!response.ok) {
             throw new Error('Failed to fetch projects');
@@ -122,7 +240,8 @@ export const getProjectDetails = async (projectCode: string) => {
 };
 export const getProjectUsers = async (projectCode: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/projetUsersliste/${projectCode}`);
+        // const response = await fetch(`${BASE_URL}/projects/getProjectUsersById/${projectCode}`);
+        const response = await fetch(`${BASE_URL}/projects/usersliste/${projectCode}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch project details');
@@ -134,6 +253,21 @@ export const getProjectUsers = async (projectCode: string) => {
         throw error;
     }
 };
+export const getProjectUsersById = async (id: number) => {
+    try {
+        const response = await fetch(`${BASE_URL}/projects/getProjectUsersById/${id}`);
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch project details');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching project details:', error);
+        throw error;
+    }
+};
+
 export const getProjectByCodes = async (projectCode: string) => {
     try {
         const response = await fetch(`${BASE_URL}/projects/getProjectByCodes/${projectCode}`);
@@ -256,6 +390,118 @@ export const  updateGroupLeader = async (projectId: string, currentLeaderId: num
             // Gérez l'erreur selon vos besoins
         }
 };
+
+
+// Fonction de filtre dans votre projet
+export const getFilteredProjects = async (
+    priority: string,
+    state: string,
+    departmentId?: number,
+    userIds?: number[],  // Liste des userIds
+    progress?: string,
+    startDate?: string,
+    endDate?: string,
+    page: number = 0,   // Ajoutez le paramètre de pagination
+    size: number = 10   // Ajoutez le paramètre de taille de page
+): Promise<BaseResponse<Project[]>> => {
+    const token = localStorage.getItem('token');
+
+    try {
+        const params = new URLSearchParams();
+
+        if (priority) params.append('priority', priority);
+        if (state) params.append('state', state);
+        if (departmentId) params.append('departmentId', departmentId.toString());
+        if (userIds) params.append('userIds', JSON.stringify(userIds));  // Ajouter les userIds
+        if (progress) params.append('progress', progress.toString());
+        if (startDate) params.append('startDate', startDate);
+        if (endDate) params.append('endDate', endDate);
+        if (page !== undefined) params.append('page', page.toString());
+        if (size !== undefined) params.append('size', size.toString());
+
+        const response = await fetch(`${BASE_URL}/projects/filter?${params.toString()}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
+                'Content-Type': 'application/json',
+            },
+        });
+        
+        if (!response.ok) {
+            throw new Error('Failed to fetch filtered projects');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching filtered projects:', error);
+        throw error;
+    }
+};
+
+
+export const getFilteredProjects2 = async (
+    priority: string,
+    state: string,
+    departmentId?: number,
+    userIds?: number[],  // Liste des userIds
+    progress?: number,
+    startDate?: string,
+    endDate?: string
+): Promise<BaseResponse<Project[]>> => {
+    // Assurez-vous que le type est BaseResponse<Project[]>
+    const token = localStorage.getItem('token');
+    
+    try {
+        const params = new URLSearchParams();
+
+        if (priority) params.append('priority', priority);
+        if (state) params.append('state', state);
+        if (departmentId) params.append('departmentId', departmentId.toString());
+        if (userIds) params.append('userIds', JSON.stringify(userIds));  // Ajouter les userIds
+        if (progress) params.append('progress', progress.toString());
+        if (startDate) params.append('startDate', startDate);
+        if (endDate) params.append('endDate', endDate);
+
+        const response = await fetch(`${BASE_URL}/projects/filter?${params.toString()}`,{
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch filtered projects');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching filtered projects:', error);
+        throw error;
+    }
+};
+
+export const getAllProjectsEndTaskByUserId = async ( userId: number): Promise<BaseResponse<any>> => {
+    const token = localStorage.getItem('token');
+    
+    try {
+        const response = await fetch(`${BASE_URL}/projects/user/${userId}`,{
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
+                'Content-Type': 'application/json',
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch filtered projects');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching filtered projects:', error);
+        throw error;
+    }
+};
+
 
 
 

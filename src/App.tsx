@@ -14,25 +14,26 @@ import VerificationOTP from './pages/Authentication/VerificationOTP';
 import Dashboard from './pages/Dashboard/Dashboard';
 import AddProject from './pages/Projects/AddProject';
 import AddTask from './pages/Tasks/AddTask';
+import EditTask from './pages/Tasks/EditTask';
 import ProjectDash from './pages/Projects/ProjectDash';
 import ProjectDetail from './pages/Projects/ProjectDetail';
 import EditProject from './pages/Projects/EditProject';
+import TaskDetail from './pages/Tasks/TaskDetail';
 
-
-// Autres
-import DefaultLayout from './layout/DefaultLayout';
-import Calendar from './pages/Calendar';
-import Chart from './pages/Chart';
 import ErrorPage from './pages/ErrorPage';
-import FormElements from './pages/Form/FormElements';
-import FormLayout from './pages/Form/FormLayout';
-import Projets from './pages/Projets';
-import Settings from './pages/Settings';
-import Tables from './pages/Tables';
-import Alerts from './pages/UiElements/Alerts';
-import Buttons from './pages/UiElements/Buttons';
 
 import AuthLayout from './layout/AuthLayout';
+import DefaultLayout from './layout/DefaultLayout';
+import TaskObs from './pages/Tasks/TaskObs';
+import TaskActions from './pages/Tasks/TaskActions';
+import Settings from './pages/Settings/Settings';
+import AddUsers from './pages/Settings/AddUsers';
+import UpdateUsers from './pages/Settings/UpdateUsers';
+import Messages from './pages/Messages';
+import Profile from './pages/Profile';
+import Calendar from './pages/Calendar';
+import Resources from './pages/Resources';
+import Gantt from './pages/Gantt';
 
 function App() {
 
@@ -77,143 +78,124 @@ function App() {
 
                 <Route path="/auth/dashboard" element={
                     <>
-                      <PageTitle title="Dashboard | MOBISOLF" />
+                      <PageTitle title="Dashboard" />
                       <Dashboard />
                     </>}
                 />
 
-                <Route path="/auth/projets" element={
+                <Route path="/auth/Admin/Settings" element={
                     <>
-                      <PageTitle title="Liste des project | MOBISOLF" />
+                      <PageTitle title="Settings" />
+                      <Settings />
+                    </>}
+                />
+                <Route path="/auth/Admin/Users/comptes" element={
+                    <>
+                      <PageTitle title="creation de compte" />
+                      <AddUsers />
+                    </>}
+                />
+                <Route path="/auth/Admin/Users/update/:id" element={
+                    <>
+                      <PageTitle title="creation de compte" />
+                      <UpdateUsers />
+                    </>}
+                />
+                <Route path="/auth/Admin/liste/messages/:id" element={
+                    <>
+                      <PageTitle title="Messages" />
+                      <Messages />
+                    </>}
+                />
+
+                <Route path="/auth/Admin/user/profile" element={
+                    <>
+                      <PageTitle title="Profile" />
+                      <Profile />
+                    </>}
+                />
+
+                <Route path="/auth/Admin/calendrier" element={
+                    <>
+                      <PageTitle title="  Calendrier" />
+                      <Calendar />
+                    </>}
+                />
+
+                <Route path="/auth/Admin/gantt" element={
+                    <>
+                      <PageTitle title="  Gantt" />
+                      <Gantt />
+                    </>}
+                />
+
+                <Route path="/auth/Admin/resources" element={
+                    <>
+                      <PageTitle title="Resources" />
+                      <Resources />
+                    </>}
+                />
+
+                <Route path="/auth/Admin/projets" element={
+                    <>
+                      <PageTitle title="Projets" />
                       <ProjectDash />
                     </>}
                 />
-                <Route path="/auth/add/projets" element={
+                <Route path="/auth/Admin/add/projets" element={
                     <>
-                      <PageTitle title="Ajout de projet | MOBISOLF" />
+                      <PageTitle title="Projets" />
                       <AddProject />
                     </>}
                 />
-                <Route path="/auth/add/modifiction/:id" element={
+                <Route path="/auth/Admin/edit/projets/:id" element={
                     <>
-                      <PageTitle title="Ajout de projet | MOBISOLF" />
+                      <PageTitle title="ProjetsF" />
                       <EditProject />
                     </>}
                 />
-                <Route path="/auth/detail/projet/:id" element={
+                <Route path="/auth/Admin/edit/taches/:id/:codes" element={
                     <>
-                      <PageTitle title="Detail du projet | MOBISOLF" />
+                      <PageTitle title="Modifier la taches" />
+                      <EditTask />
+                    </>}
+                />
+                <Route path="/auth/Admin/detail/projets/:id" element={
+                    <>
+                      <PageTitle title="Detail du projet" />
                       <ProjectDetail />
                     </>}
                 />
 
-              <Route path="/auth/task/add/:id" element={
+              <Route path="/auth/Admin/add/tâches/:id" element={
                     <>
-                      <PageTitle title="Ajout de tâche | MOBISOLF" />
+                      <PageTitle title="Ajouter une tâche" />
                       <AddTask />
                     </>}
                 />
 
-                <Route
-                  path="/calendar"
-                  element={
+              <Route path="/auth/Admin/detail/taches/:id" element={
                     <>
-                      <PageTitle title="Calendar | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <Calendar />
-                    </>
-                  }
+                      <PageTitle title="Ajout de tâche" />
+                      <TaskDetail />
+                    </>}
                 />
-                <Route
-                  path="/Projets"
-                  element={
+
+              <Route path="/auth/Admin/obs/lites/:id" element={
                     <>
-                      <PageTitle title="Liste des Projets|" />
-                      <Projets />
-                    </>
-                  }
+                      <PageTitle title="Liste des observations" />
+                      <TaskObs />
+                    </>}
                 />
-                <Route
-                  path="/forms/form-elements"
-                  element={
+              <Route path="/auth/Admin/action/lites/:id" element={
                     <>
-                      <PageTitle title="Form Elements | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <FormElements />
-                    </>
-                  }
+                      <PageTitle title="Lites des actions" />
+                      <TaskActions />
+                    </>}
                 />
-                <Route
-                  path="/forms/form-layout"
-                  element={
-                    <>
-                      <PageTitle title="Form Layout | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <FormLayout />
-                    </>
-                  }
-                />
-                <Route
-                  path="/tables"
-                  element={
-                    <>
-                      <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <Tables />
-                    </>
-                  }
-                />
-                <Route
-                  path="/settings"
-                  element={
-                    <>
-                      <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <Settings />
-                    </>
-                  }
-                />
-                <Route
-                  path="/chart"
-                  element={
-                    <>
-                      <PageTitle title="Basic Chart | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <Chart />
-                    </>
-                  }
-                />
-                <Route
-                  path="/ui/alerts"
-                  element={
-                    <>
-                      <PageTitle title="Alerts | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <Alerts />
-                    </>
-                  }
-                />
-                <Route
-                  path="/ui/buttons"
-                  element={
-                    <>
-                      <PageTitle title="Buttons | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <Buttons />
-                    </>
-                  }
-                />
-                <Route
-                  path="/auth/signin"
-                  element={
-                    <>
-                      <PageTitle title="Signin | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <SignIn />
-                    </>
-                  }
-                />
-                <Route
-                  path="/auth/signup"
-                  element={
-                    <>
-                      <PageTitle title="Signup | TailAdmin - Tailwind CSS Admin Dashboard Template" />
-                      <SignUp />
-                    </>
-                  }
-                />
+
                 {/* <Route path="*" element={<ErrorPage />} /> */}
+
               </Routes>
 
           </DefaultLayout>

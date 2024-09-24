@@ -11,9 +11,11 @@ import { useParams } from 'react-router-dom';
 
 interface SelectOneUsersProps {
   setUsers: React.Dispatch<React.SetStateAction<string>>;
+  codes: string;
+  activeUser: string;
 }
 
-const SelectOneUsers: React.FC<SelectOneUsersProps> = ({ setUsers }) => {
+const SelectOneUsers: React.FC<SelectOneUsersProps> = ({ setUsers,codes,activeUser }) => {
 
   const { id } = useParams<{ id: string }>();
   
@@ -26,25 +28,34 @@ const SelectOneUsers: React.FC<SelectOneUsersProps> = ({ setUsers }) => {
 
 
   const fetchUsers = async (code: string) => {
+
     try {
+
       const apiResponse = await getProjectUsers(code);
       setResponse(apiResponse);
-      console.log(apiResponse);
+
+        // Trouver l'utilisateur par défaut avec userId
+
+        if (apiResponse.data) {
+
+          const defaultUser = apiResponse.data.find((user: { userId: { toString: () => string | undefined; }; }) => user.userId.toString() === activeUser.toString());
+
+            if(defaultUser){
+
+              setSelectedUser(defaultUser);
+              setUsers(defaultUser.userId.toString());
+
+            }
+        }
 
     } catch (error) {
-      console.error('Error fetching Users:', error);
-      toast.error('Failed to fetch Users');
+      // toast.error('Failed to fetch Users');
     }
   };
   useEffect(() => {
-
-    fetchUsers(id!);
-
-        // if (id) {
-        //   fetchUsers(id);
-        // }
-
-    }, [id]);
+    
+    fetchUsers(codes!);
+    }, [codes,activeUser]);
 
   const handleToggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -84,23 +95,23 @@ const SelectOneUsers: React.FC<SelectOneUsersProps> = ({ setUsers }) => {
                 {selectedUser ? (
                   <div className="flex items-center bg-[#dcdcdc] text-black text-[13px] px-3 py-1 rounded-full">
                     {selectedUser.firstname} {selectedUser.lastname}
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 25 25"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="ml-2"
-                    >
-                      <path
-                        d="M19.5 6.91L18.09 5.5L12.5 11.09L6.91 5.5L5.5 6.91L11.09 12.5L5.5 18.09L6.91 19.5L12.5 13.91L18.09 19.5L19.5 18.09L13.91 12.5L19.5 6.91Z"
-                        fill="black"
-                        fillOpacity="0.6"
-                      />
-                    </svg>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 25 25"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="ml-2"
+                      >
+                        <path
+                          d="M19.5 6.91L18.09 5.5L12.5 11.09L6.91 5.5L5.5 6.91L11.09 12.5L5.5 18.09L6.91 19.5L12.5 13.91L18.09 19.5L19.5 18.09L13.91 12.5L19.5 6.91Z"
+                          fill="black"
+                          fillOpacity="0.6"
+                        />
+                      </svg>
                   </div>
                 ) : (
-                  'Sélectionnez'
+                  'Sélectionnez un membre'
                 )}
               </span>
 

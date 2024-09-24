@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import UserOne from '../../images/user/user-01.png';
 import { Users } from '../../interfaces/Users';
+// import { UserState } from '../../interfaces/UserState';
 
 
 interface TableUsersSelecteProps {
   Tablegenerate: Users[];
   setTablegenerate: React.Dispatch<React.SetStateAction<Users[]>>;
+  // setDataGenerated: React.Dispatch<React.SetStateAction<UserState>>;
+
   setDataGenerated: React.Dispatch<React.SetStateAction<{ userId: number[]; leaderId: number; }>>;
+
 }
 
 

@@ -1,170 +1,114 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import ClickOutside from '../ClickOutside';
-
-import UserOne from '../../images/user/user-01.png';
+import 'react-toastify/dist/ReactToastify.css';
 import UserTwo from '../../images/user/user-02.png';
-import UserThree from '../../images/user/user-03.png';
-import UserFour from '../../images/user/user-04.png';
+import { NotificationDTO } from '../../interfaces/Notification';
+import { getUnreadNotifications } from '../../services/NotifService';
+
 
 const DropdownMessage = () => {
+
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifying, setNotifying] = useState(true);
+  const [response, setResponse] = useState<NotificationDTO[] | null>(null);
+  const { id } = useParams<{ id: string }>();
+
+
+  const extractHour = (isoString: string): string => {
+    // Créez un objet Date à partir de la chaîne ISO
+    const date = new Date(isoString);
+    
+    // Obtenez l'heure et les minutes en format 24h
+    const hours = date.getUTCHours().toString().padStart(2, '0');
+    const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+    
+    // Retournez l'heure au format HH:mm
+    return `${hours}:${minutes}`;
+};
+
+  const getNotifications = async () => {
+    try {
+      const resp = await getUnreadNotifications();
+            setResponse(resp.data)
+
+    } catch (error) {
+
+      console.error('Erreur lors de la récupération du message :', error);
+    }
+  };
+
+  useEffect(() => {
+    getNotifications();
+  }, []);
 
   return (
 
-    <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
-      <li className="relative">
-        <Link
-          onClick={() => {
-            setNotifying(false);
-            setDropdownOpen(!dropdownOpen);
-          }}
-          className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white"
-          to="#"
-        >
-          <span
-            className={`absolute -top-0.5 -right-0.5 z-1 h-2 w-2 rounded-full bg-meta-1 ${
-              notifying === false ? 'hidden' : 'inline'
-            }`}
-          >
-            <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
-          </span>
+    <>
 
-          <svg
-            className="fill-current duration-300 ease-in-out"
-            width="18"
-            height="18"
-            viewBox="0 0 18 18"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M10.9688 1.57495H7.03135C3.43135 1.57495 0.506348 4.41558 0.506348 7.90308C0.506348 11.3906 2.75635 13.8375 8.26885 16.3125C8.40947 16.3687 8.52197 16.3968 8.6626 16.3968C8.85947 16.3968 9.02822 16.3406 9.19697 16.2281C9.47822 16.0593 9.64697 15.75 9.64697 15.4125V14.2031H10.9688C14.5688 14.2031 17.522 11.3625 17.522 7.87495C17.522 4.38745 14.5688 1.57495 10.9688 1.57495ZM10.9688 12.9937H9.3376C8.80322 12.9937 8.35322 13.4437 8.35322 13.9781V15.0187C3.6001 12.825 1.74385 10.8 1.74385 7.9312C1.74385 5.14683 4.10635 2.8687 7.03135 2.8687H10.9688C13.8657 2.8687 16.2563 5.14683 16.2563 7.9312C16.2563 10.7156 13.8657 12.9937 10.9688 12.9937Z"
-              fill=""
-            />
-            <path
-              d="M5.42812 7.28442C5.0625 7.28442 4.78125 7.56567 4.78125 7.9313C4.78125 8.29692 5.0625 8.57817 5.42812 8.57817C5.79375 8.57817 6.075 8.29692 6.075 7.9313C6.075 7.56567 5.79375 7.28442 5.42812 7.28442Z"
-              fill=""
-            />
-            <path
-              d="M9.00015 7.28442C8.63452 7.28442 8.35327 7.56567 8.35327 7.9313C8.35327 8.29692 8.63452 8.57817 9.00015 8.57817C9.33765 8.57817 9.64702 8.29692 9.64702 7.9313C9.64702 7.56567 9.33765 7.28442 9.00015 7.28442Z"
-              fill=""
-            />
-            <path
-              d="M12.5719 7.28442C12.2063 7.28442 11.925 7.56567 11.925 7.9313C11.925 8.29692 12.2063 8.57817 12.5719 8.57817C12.9375 8.57817 13.2188 8.29692 13.2188 7.9313C13.2188 7.56567 12.9094 7.28442 12.5719 7.28442Z"
-              fill=""
-            />
-          </svg>
-        </Link>
+        <ClickOutside onClick={() => setDropdownOpen(false)} className="relative">
+          
+          <li className="relative">
+            <Link  onClick={() => { setNotifying(false); setDropdownOpen(!dropdownOpen);}} className="relative flex h-8.5 w-8.5 items-center justify-center rounded-full border-[0.5px] border-stroke bg-gray hover:text-primary dark:border-strokedark dark:bg-meta-4 dark:text-white" to="#">
+              <span className={`absolute -top-0.5 -right-0.5 z-1 h-2 w-2 rounded-full bg-meta-1 ${
+                  notifying === false ? 'hidden' : 'inline' }`}>
+                <span className="absolute -z-1 inline-flex h-full w-full animate-ping rounded-full bg-meta-1 opacity-75"></span>
+              </span>
 
-        {/* <!-- Dropdown Start --> */}
-        {dropdownOpen && (
-          <div
-            className={`absolute -right-16 mt-2.5 flex h-90 w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80`}
-          >
-            <div className="px-4.5 py-3">
-              <h5 className="font-medium text-2xl  text-bodydark2">Notification</h5>
-            </div>
+              <svg width="18" height="18" viewBox="0 0 23 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.5709 21.0781H2.09433C1.01377 21.0781 0.134766 20.1991 0.134766 19.1186C0.134766 18.5451 0.384504 18.0021 0.820009 17.6291C0.8481 17.6045 0.87824 17.5822 0.909612 17.5619C2.55342 16.1274 3.49414 14.0637 3.49414 11.8845V8.76035C3.49414 4.43811 7.0114 0.921875 11.3326 0.921875C11.5118 0.921875 11.7056 0.925156 11.8848 0.955502C12.3426 1.03157 12.6518 1.46503 12.5756 1.92185C12.4995 2.37868 12.0582 2.68788 11.6092 2.61161C11.5196 2.59705 11.4212 2.60156 11.3326 2.60156C7.93756 2.60156 5.17383 5.36407 5.17383 8.76035V11.8845C5.17383 14.59 3.98788 17.15 1.92312 18.9068C1.90631 18.9203 1.89175 18.9326 1.87371 18.9449C1.84357 18.983 1.81445 19.0413 1.81445 19.1186C1.81445 19.2707 1.94219 19.3984 2.09433 19.3984H20.5709C20.7232 19.3984 20.851 19.2707 20.851 19.1186C20.851 19.04 20.8219 18.983 20.7905 18.9449C20.7737 18.9326 20.7591 18.9203 20.7423 18.9068C18.6763 17.1487 17.4916 14.59 17.4916 11.8845V10.6641C17.4916 10.2005 17.8679 9.8243 18.3314 9.8243C18.795 9.8243 19.1713 10.2005 19.1713 10.6641V11.8845C19.1713 14.0649 20.113 16.1297 21.7591 17.5654C21.7892 17.5855 21.8184 17.6068 21.8452 17.6304C22.2809 18.0021 22.5307 18.5451 22.5307 19.1186C22.5307 20.1991 21.6517 21.0781 20.5709 21.0781Z" fill="black" fill-opacity="0.87"/>
+            </svg>
 
-            <ul className="flex h-auto flex-col overflow-y-auto">
-              <li>
-                <Link
-                  className="flex gap-4.5  border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="/messages"
-                >
-                  <div className="h-12.5 w-12.5 rounded-full">
-                    <img src={UserTwo} alt="User" />
-                  </div>
+            </Link>
 
-                  <div>
-                    <h6 className="text-sm font-medium text-black dark:text-white">
-                      Mariya Desoja
-                    </h6>
-                    <p className="text-sm">I like your confidence 💪</p>
-                    <p className="text-xs">2min ago</p>
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex gap-4.5  border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="/messages"
-                >
-                  <div className="h-12.5 w-12.5 rounded-full">
-                    <img src={UserOne} alt="User" />
-                  </div>
 
-                  <div>
-                    <h6 className="text-sm font-medium text-black dark:text-white">
-                      Robert Jhon
-                    </h6>
-                    <p className="text-sm">Can you share your offer?</p>
-                    <p className="text-xs">10min ago</p>
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex gap-4.5  border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="/messages"
-                >
-                  <div className="h-12.5 w-12.5 rounded-full">
-                    <img src={UserThree} alt="User" />
-                  </div>
+            {dropdownOpen && (
+              
+              <div className={`absolute -right-16 mt-2.5 flex h-90 w-75 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark sm:right-0 sm:w-80`}>
+                <div className="px-4.5 py-3">
+                  <h5 className="font-medium text-2xl  text-bodydark2">Notification er</h5>
+                </div>
 
-                  <div>
-                    <h6 className="text-sm font-medium text-black dark:text-white">
-                      Henry Dholi
-                    </h6>
-                    <p className="text-sm">I cam across your profile and...</p>
-                    <p className="text-xs">1day ago</p>
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex gap-4.5  border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="/messages"
-                >
-                  <div className="h-12.5 w-12.5 rounded-full">
-                    <img src={UserFour} alt="User" />
-                  </div>
+                  <ul className="flex h-auto flex-col overflow-y-auto">
 
-                  <div>
-                    <h6 className="text-sm font-medium text-black dark:text-white">
-                      Cody Fisher
-                    </h6>
-                    <p className="text-sm">I’m waiting for you response!</p>
-                    <p className="text-xs">5days ago</p>
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  className="flex gap-4.5  border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-                  to="/messages"
-                >
-                  <div className="h-12.5 w-12.5 rounded-full">
-                    <img src={UserTwo} alt="User" />
-                  </div>
+                  {response && response.length > 0 ? (
+                        response.map((item, index) => (
 
-                  <div>
-                    <h6 className="text-sm font-medium text-black dark:text-white">
-                      Mariya Desoja
-                    </h6>
-                    <p className="text-sm">I like your confidence 💪</p>
-                    <p className="text-xs">2min ago</p>
-                  </div>
-                </Link>
-              </li>
-            </ul>
-            
-          </div>
-        )}
-        {/* <!-- Dropdown End --> */}
-      </li>
-    </ClickOutside>
+                            <li>
+                              <Link  onClick={() => { setNotifying(false); setDropdownOpen(!dropdownOpen);}} to={`/auth/Admin/liste/messages/${item.notificationId}`}  className="flex gap-4.5  border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4">
+                                <div className="h-12.5 w-12.5 rounded-full">
+                                  <img src={UserTwo} alt="User" />
+                                </div>
+
+                                <div>
+                                  <h6 className="text-sm font-medium text-black dark:text-white">
+                                    {item.userAddBBy[0].firstname}  {item.userAddBBy[0].lastname}
+                                  </h6>
+                                  <p className="text-sm">{item.title}💪</p>
+                                  <p className="text-xs"> { extractHour(item.createdAt)} min par {item.userAddBBy[0].firstname}  {item.userAddBBy[0].lastname}</p>
+                                </div>
+                              </Link>
+                            </li>
+                        ))
+
+                    ) : (
+                      <tr>
+                        <td className="px-4 py-4 text-lg text-gray-500 dark:text-gray-300 whitespace-nowrap items-center text-center">
+                          Aucun projet trouvé
+                        </td>
+                      </tr>
+                )}
+
+                  </ul>
+                
+              </div>
+            )}
+
+          </li>
+        </ClickOutside>
+
+
+    </>
 
   );
   

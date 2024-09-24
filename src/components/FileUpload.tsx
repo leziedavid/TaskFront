@@ -23,6 +23,7 @@ const FileUpload: React.FC<Props> = ({ titles, setTitles, file, setFile, fileObj
         setFileObjects(newFileObjects);
     };
 
+
     const handleFileChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
         const files = event.target.files;
         if (files && files.length > 0) {

@@ -3,10 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import FileUpload from '../../components/FileUpload';
-import SelectDepartment from '../../components/Forms/SelectGroup/SelectDepartment';
-import SelectPriorite from '../../components/Forms/SelectGroup/SelectPriorite';
-import SelectState from '../../components/Forms/SelectGroup/SelectState';
-import SelectUsers from '../../components/Forms/SelectGroup/SelectUsers';
 import QuillEditor from '../../components/QuillEditor';
 import TableUsersSelecte from '../../components/Tables/TableUsersSelecte';
 
@@ -20,17 +16,28 @@ import { differenceInDays, parseISO } from 'date-fns';
 import Loading from '../../common/Loader/Loading';
 import { SaveProject } from '../../services/ProjectService';
 
+import { getUserIdFromToken } from '../../services/ApiService';
+import { Department } from '../../interfaces/Department';
+import SelectMultipleDepartment from '../../components/Forms/SelectGroup/SelectMultipleDepartment';
+import SelectUsersFilter from '../../components/Forms/SelectGroup/SelectUsersFilter';
+import SelectPriorite2 from '../../components/Forms/SelectGroup/SelectPriorite2';
+import SelectState2 from '../../components/Forms/SelectGroup/SelectState2';
 
 const AddProject: React.FC = () => {
 
+
+    const today = new Date().toISOString().split('T')[0];
+
+    const [msg, setMsg] = useState('');
     const [libelle, setLibelle] = useState('');
     const [nbDay, setNbDay] = useState<string>('');
-    const [dateDebut, setDateDebut] = useState('');
-    const [dateFin, setDateFin] = useState('');
+    const [dateDebut, setDateDebut] = useState(today);
+    const [dateFin, setDateFin] = useState(today);
     const [description, setDescription] = useState('');
     const [Priority, setPriority] = useState("");
     const [state, setState] = useState("EN_ATTENTE");
-    const [Department, setDepartment] = useState("");
+    const [Departments, setDepartment]  = useState<string[]>([]);
+    const [dataDepartment, setDataDepartment] = useState<Department[]>([]);
     const [Users, setUsers] =  useState<string[]>([]);
     
     const [userid, setUserid] = useState(localStorage.getItem('token'));
@@ -54,7 +61,7 @@ const AddProject: React.FC = () => {
     const navigate = useNavigate();
     
     const handleAddProject = () => {
-        navigate('/auth/projets');
+        navigate('/auth/Admin/projets');
     };
 
     const calculateDaysDifference = (date1: string, date2: string): string => {
@@ -63,7 +70,6 @@ const AddProject: React.FC = () => {
         const daysDifference = differenceInDays(parsedDate2, parsedDate1)+1;
         return daysDifference.toString();
     };
-
 
     const [isOuiSelected, setIsOuiSelected] = useState(false);
 
@@ -81,28 +87,78 @@ const AddProject: React.FC = () => {
         SetStateColor('#2196F3');
     };
 
-    useEffect(() => {
+    // Utilisation de useState pour stocker l'ID de l'utilisateur
+    const [userId, setUserId] = useState<number | null>(null);
+    // Appel du service pour récupérer l'ID de l'utilisateur à partir du token
+    const fetchUserId = async () => {
 
+                try {
+                    
+                    const token = localStorage.getItem('token');
+                    if (token) {
+                        const response = await getUserIdFromToken(token);
+    
+                        if (response.code === 200 && response.data) {
+    
+                            setUserId(response.data);
+                        } else {
+    
+                            toast.error("Erreur lors de la récupération de l'ID utilisateur.");
+                        }
+                    } else {
+    
+                        toast.error("Token introuvable dans le localStorage.");
+                    }
+                } catch (error) {
+    
+                    console.error('Erreur lors de la récupération de l\'ID utilisateur :', error);
+                    toast.error("Erreur lors de la récupération de l'ID utilisateur.");
+                    
+                }
+            };
+
+    useEffect(() => {
+        fetchUserId(); // Appel de la fonction au montage du composant
+    }, []); // Le tableau vide [] assure que useEffect ne se déclenche qu'une fois, équivalent à componentDidMount
+
+
+    useEffect(() => {
             // Calculer le nombre de jours si les dates de début et de fin sont définies
             if (dateDebut && dateFin) {
-                const daysDifference = calculateDaysDifference(dateDebut, dateFin);
-                setNbDay(daysDifference);
+                const daysDifferenceString = calculateDaysDifference(dateDebut, dateFin);
+                const daysDifference = Number(daysDifferenceString); // Convertir en nombre
+        
+                // Vérifier si daysDifference est négatif
+                if (daysDifference < 0) {
+                    
+                    const daysDifferenceStr = daysDifference.toString();
+                    setNbDay(daysDifferenceStr);
+                    setMsg("La différence de jours est négative. Veuillez vérifier vos dates.");
+                } else {
+                    // Convertir en chaîne et mettre à jour le nombre de jours
+                    setMsg("");
+                    const daysDifferenceStr = daysDifference.toString();
+                    setNbDay(daysDifferenceStr);
+                }
             }
 
             if (response && response.data && response.code === 201) {
-
+                
                 SetLoad(false);
-                toast.success("Connexion réussie !");
-                navigate('/auth/projets');
+                toast.success("Projet créé avec succès !");
+                // Ajouter un délai de 3 secondes avant la redirection
+                setTimeout(() => {
+                    navigate('/auth/Admin/projets');
+                }, 3000); // Délai de 3000 millisecondes (3 secondes)
 
             } else if (response) {
                 
                 SetLoad(false);
-                toast.error("Erreur lors de la connexion. Veuillez réessayer.");
+                toast.error("Erreur lors de la création du projet. Veuillez réessayer.");
             }
-        }, [response, history,dateDebut, dateFin]);
+    }, [response, history,dateDebut, dateFin]);
 
-        const AddData = async () => {
+    const AddData = async () => {
 
             SetLoad(true);
 
@@ -166,11 +222,8 @@ const AddProject: React.FC = () => {
             formData.append('stateColor', stateColor);
             formData.append('progress', '0');
             formData.append('users', JSON.stringify(DataGenerated));
-
-            if (userid !== null) {
-                formData.append('userId', "1");
-            }
-
+            formData.append('userId', userId!.toString());
+            
             if (fileObjects && fileObjects.length > 0) {
 
                 formData.append('nbfiles', String(fileObjects.length));
@@ -192,7 +245,7 @@ const AddProject: React.FC = () => {
                 SetLoad(false);
                 console.error('Erreur lors de l\'ajout du projet :', error);
             }
-        };
+    };
 
     return (
 
@@ -216,27 +269,29 @@ const AddProject: React.FC = () => {
                                 <label className="mb-4.5 block text-lg font-medium text-black dark:text-white"> INFORMATION SUR LE PROJET</label>
 
                                 <div className="mb-5">
-                                    <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="Username"> Nom du projet {Department} </label>
+                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="Username"> Nom du projet  <span className="text-red-700"> * </span> </label>
                                     <input value={libelle} onChange={(event) => { setLibelle(event.target.value); }} className="w-full rounded-lg border border-stroke py-2 px-4 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black" type="text" name="Libelet" placeholder="Saisir le nom du projet"
                                     />
                                 </div>
 
                                 <div className="mb-5">
-                                    <SelectPriorite  placeholder1={placeholder1} setPriority={setPriority} SetPrioColor={SetPrioColor} priorityValue={Priority} />
+                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Priorité <span className="text-red-700"> * </span> </label>
+                                    <SelectPriorite2  placeholder1={placeholder1} setPriority={setPriority} SetPrioColor={SetPrioColor} priorityValue={Priority} />
                                 </div>
 
                                 <div className="mb-5">
-                                    <SelectState placeholder2={placeholder2} setState={setState} defaultDisabled={false} stateValue={state}  />
+                                <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Status <span className="text-red-700"> * </span> </label>
+                                    <SelectState2 placeholder2={placeholder2} setState={setState} defaultDisabled={false} stateValue={state}  />
                                 </div>
                                 
                                 <div className="mb-5 flex flex-col gap-5.5 sm:flex-row">
 
                                     <div className="w-full sm:w-1/2">
-                                        <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="fullName" > Date de debut</label>
+                                        <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Date de debut <span className="text-red-700"> * </span> </label>
                                         <div className="relative">
                                         {/* datetime-local */}
                                             <input className="w-full rounded border  border-stroke  py-2 pl-11.5 pr-4.5 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black"
-                                                type="date"
+                                                type="datetime-local"
                                                 placeholder=""
                                                 value={dateDebut}
                                                 onChange={(e) => setDateDebut(e.target.value)}
@@ -247,11 +302,10 @@ const AddProject: React.FC = () => {
 
                                     <div className="w-full sm:w-1/2">
 
-                                        <label className="mb-3 block text-sm font-medium text-black dark:text-white" htmlFor="fullName" > Date de fin</label>
-
+                                        <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Date de fin <span className="text-red-700"> * </span> </label>
                                         <input
                                             className="w-full rounded border border-stroke  py-2 px-4.5 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black"
-                                            type="date"
+                                            type="datetime-local"
                                             placeholder=""
                                             value={dateFin}
                                             onChange={(e) => setDateFin(e.target.value)}
@@ -263,6 +317,7 @@ const AddProject: React.FC = () => {
                                 {nbDay ? (
                                     <div className="mb-5">
                                         <p> La durée estimée de ce projet est de {nbDay} Jours </p>
+                                        <span className="text-red-800"> {msg}</span>
                                     </div>
                                         ) : (
                                     <div className="mb-5"> </div>
@@ -270,6 +325,7 @@ const AddProject: React.FC = () => {
 
 
                                 <div className="mb-5">
+                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Description <span className="text-red-700"> * </span> </label>
                                     <QuillEditor value={description} onChange={setDescription} />
                                 </div>
 
@@ -278,13 +334,14 @@ const AddProject: React.FC = () => {
                                 </label>
 
                                 <div className="mb-10">
-                                    <SelectDepartment setDepartment={setDepartment} />
+                                <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Departement <span className="text-red-700"> * </span> </label>
+                                    <SelectMultipleDepartment setDepartment={setDepartment} departments={dataDepartment} />
                                 </div>
                                 
-                                    {Department ? (
+                                    {Departments.length >0 ? (
                                         <div className="mb-5">
-                                            <SelectUsers setUsers={setUsers} Department={Department} setTablegenerate={setTablegenerate}
-                                                setDataGenerated={setDataGenerated} />
+                                            <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Assigner à des utilisateurs  <span className="text-red-700"> * </span>  </label>
+                                            <SelectUsersFilter setUsers={setUsers} Departments={Departments} setTablegenerate={setTablegenerate} setDataGenerated={setDataGenerated} />
                                         </div>
                                         ): (
                                         <div className=""> </div>
@@ -305,6 +362,7 @@ const AddProject: React.FC = () => {
                                     />
                                 </div>
 
+                                {/* <label className="flex justify-end mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" >Voulez-vous démarrer ce projet ?  </label>
                                 <div className="flex justify-end items-center">
                                     <div className="mt-5 mb-5.5 flex items-center">
                                         <label htmlFor="ouiCheckbox" className="flex cursor-pointer">
@@ -349,7 +407,7 @@ const AddProject: React.FC = () => {
                                             <p>NON</p>
                                         </label>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 {Load ? (
                                     <Loading/>

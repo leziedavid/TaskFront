@@ -11,8 +11,11 @@ import { BaseResponse } from '../../interfaces/ApiResponse';
 
     interface UserData {
       code: number;
+      userId: number;
       token: string;
       message: string;
+      role: string;
+      username: string;
     }
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -29,6 +32,11 @@ useEffect(() => {
 
     toast.success("Connexion réussie !");
     localStorage.setItem('token', response.data.token);
+    localStorage.setItem('authorisation', response.data.role);
+    localStorage.setItem('users', response.data.username);
+    const username = response.data.userId;
+    const version = `@${username}`;
+    localStorage.setItem('version',version);
     navigate('/auth/dashboard');
 
   } else if (response) {

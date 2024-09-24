@@ -7,12 +7,14 @@ export interface UserListes {
     user: {
         length: number;
         userId: number;
+        isValides: number;
         lastname: string;
         firstname: string;
         phone: string;
         email: string;
         username: string;
         fonction: string;
+        role: string;
         otp: number;
         genre: string;
         usersCreatedAt: string;
@@ -59,6 +61,7 @@ export interface UserListes {
             fonction: string;
             otp: number;
             genre: string;
+            role: string;
             usersCreatedAt: string;
             usersUpdatedAt: string;
             enabled: boolean;

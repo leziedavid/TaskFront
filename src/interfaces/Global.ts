@@ -1,11 +1,36 @@
-export interface User {
+export interface Department {
+    departmentId: number | null;
+    departmentName: string | null;
+    departmentSigle: string | null;
+    departmentCreatedAt: string;
+    departmentUpdatedAt: string;
+    
+}
+
+// src/interfaces/Leave.ts
+export interface Leave {
+    leaveId: number;
     userId: number;
+    startDate: Date;
+    endDate: Date;
+    leaveType: string;
+    status: string;
+    description: string;
+}
+
+
+export interface User {
+    length: number;
+    userId: number;
+    // isValides: number;
+    isValid: number;
     lastname: string;
     firstname: string;
     phone: string;
     email: string;
     username: string;
     fonction: string;
+    role: string;
     otp: number;
     genre: string;
     usersCreatedAt: string;
@@ -15,6 +40,9 @@ export interface User {
     accountNonExpired: boolean;
     accountNonLocked: boolean;
     credentialsNonExpired: boolean;
+    departments: Department[];
+    leaves: Leave[];  // Ajout des congés
+    
 }
 
 export interface Authority {
@@ -54,7 +82,10 @@ export interface FileData {
 }
 
 export interface Task {
+    isValides: number;
     taskId: number;
+    taskCode: string;
+    projectId: number;
     taskName: string;
     taskDescription: string;
     taskPriority: string;
@@ -65,6 +96,7 @@ export interface Task {
     taskEndDate: string;
     taskCreatedAt: string;
     taskUpdatedAt: string;
+    alerteDate: string;
     progression: any; // Adjust type as per API response
     colorCode: string;
     project: Project;

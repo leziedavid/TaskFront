@@ -7,155 +7,217 @@ import SelectPriorite from '../../components/Forms/SelectGroup/SelectPriorite';
 import SelectState from '../../components/Forms/SelectGroup/SelectState';
 
 import SelectOneUsers from '../../components/Forms/SelectGroup/SelectOneUsers';
-import SelectAllUsers from '../../components/Forms/SelectGroup/SelectAllUsers';
 import QuillEditor from '../../components/QuillEditor';
 
 import { BaseResponse } from '../../interfaces/ApiResponse';
 import { Donnees } from '../../interfaces/Donnees';
-import { Users } from '../../interfaces/Users';
-import { UserState } from '../../interfaces/UserState';
-
-import { differenceInDays, parseISO } from 'date-fns';
 import Loading from '../../common/Loader/Loading';
 import { SaveTask } from '../../services/TaskService';
+import { getUserIdFromToken } from '../../services/ApiService';
+import { calculateDaysDifference, calculateHoursDifference, compareDateRangesTask } from '../../services/dateService';
+import SelectPriorite2 from '../../components/Forms/SelectGroup/SelectPriorite2';
+import SelectState2 from '../../components/Forms/SelectGroup/SelectState2';
+
 
 const AddTask: React.FC = () => {
 
+    const [msg, setMsg] = useState('');
     const [libelle, setLibelle] = useState('');
-    const [heurs, setHeurs] = useState(2);
+    const [heurs, setHeurs] = useState('');
     const [nbDay, setNbDay] = useState<string>('');
     const [dateDebut, setDateDebut] = useState('');
     const [dateFin, setDateFin] = useState('');
+
+    const [projectStartDate, setProjectStartDate] = useState('');
+    const [projectEndDate, setProjectEndDate] = useState('');
+
     const [description, setDescription] = useState('');
     const [Priority, setPriority] = useState("");
     const [state, setState] = useState("EN_ATTENTE");
-    const [Department, setDepartment] = useState("");
     const [User, setUsers] = useState('');
-    const [userid, setUserid] = useState(localStorage.getItem('token'));
-    const [projectId, setprojectId] = useState(useParams<{ id: string }>());
-    const [Tablegenerate, setTablegenerate] = useState<Users[]>([]);
-    const [DataGenerated, setDataGenerated] = useState<UserState>({usersId: [], leaderId: 0  });
     const [Load, SetLoad] = useState(false);
-    const [titles, setTitles] = useState('');
     const [placeholder1, setPlaceholder1] = useState("Selectionnez la priorité");
     const [placeholder2, setPlaceholder2] = useState("Selectionnez le status");
-
+    const [message, setMessage] = useState('');
     const [stateColor, SetStateColor] = useState("#2196F3");
     const [prioColor, SetPrioColor] = useState("#F27F1B");
 
     const [response, setResponse] = useState<BaseResponse<Donnees> | null>(null);
     const navigate = useNavigate();
+
     const { id } = useParams<{ id: string }>();
 
     const handleAddTask = () => {
-        navigate(`/auth/detail/projet/${id}`);
+        localStorage.removeItem('projectStartDate');
+        localStorage.removeItem('projectEndDate');
+        navigate(`/auth/Admin/detail/projets/${id}`);
     };
 
-    const calculateDaysDifference = (date1: string, date2: string): string => {
-        const parsedDate1 = parseISO(date1);
-        const parsedDate2 = parseISO(date2);
-        const daysDifference = differenceInDays(parsedDate2, parsedDate1)+1;
-        return daysDifference.toString();
-    };
+    const [userId, setUserId] = useState<number | null>(null);
+    const fetchUserId = async () => {
 
+        try {
 
-    const [isOuiSelected, setIsOuiSelected] = useState(false);
-    const handleOuiClick = () => {
-        setIsOuiSelected(true);
-        setState('EN_COURS');
-        SetStateColor('#038C4C');
-    };
+            const token = localStorage.getItem('token');
+            if (token) {
+                const response = await getUserIdFromToken(token);
 
-    const handleNonClick = () => {
-        setIsOuiSelected(false);
-        setState('EN_ATTENTE');
-        SetStateColor('#2196F3');
+                if (response.code === 200 && response.data) {
+
+                    setUserId(response.data);
+                } else {
+
+                    toast.error("Erreur lors de la récupération de l'ID utilisateur.");
+                }
+            } else {
+
+                toast.error("Token introuvable dans le localStorage.");
+            }
+        } catch (error) {
+
+            console.error('Erreur lors de la récupération de l\'ID utilisateur :', error);
+            toast.error("Erreur lors de la récupération de l'ID utilisateur.");
+
+        }
     };
 
     useEffect(() => {
+        fetchUserId();
+        const projectStartDate = localStorage.getItem('projectStartDate');
+        const projectEndDate = localStorage.getItem('projectEndDate');
+        if(projectStartDate && projectEndDate){
+            setProjectStartDate(projectStartDate)
+            setProjectEndDate(projectEndDate)
+        }else{
+            navigate(`/auth/Admin/detail/projets/${id}`);
+        }
 
-            // Calculer le nombre de jours si les dates de début et de fin sont définies
-            if (dateDebut && dateFin) {
-                const daysDifference = calculateDaysDifference(dateDebut, dateFin);
-                setNbDay(daysDifference);
+    }, []);
+
+    useEffect(() => {
+
+        // Calculer le nombre de jours si les dates de début et de fin sont définies
+        if (dateDebut && dateFin) {
+            const daysDifferenceString = calculateDaysDifference(dateDebut, dateFin);
+            const daysDifference = Number(daysDifferenceString); // Convertir en nombre
+
+            // Vérifier si daysDifference est négatif
+            if (daysDifference < 0) {
+
+                const daysDifferenceStr = daysDifference.toString();
+                setNbDay(daysDifferenceStr);
+                setMsg("La différence de date donne un nombre  négative. Veuillez vérifier vos dates.");
+
+            } else {
+
+                // Convertir en chaîne et mettre à jour le nombre de jours
+                setMsg("");
+                const daysDifferenceStr = daysDifference.toString();
+                setNbDay(daysDifferenceStr);
             }
 
-            if (response && response.data && response.code === 201) {
-                SetLoad(false);
-                toast.success("Connexion réussie !");
-                navigate(`/auth/detail/projet/${id}`);
-            } else if (response) {
-                SetLoad(false);
-                toast.error("Erreur lors de la connexion. Veuillez réessayer.");
+            const hoursDifference = calculateHoursDifference(dateDebut, dateFin);
+            setHeurs(hoursDifference);
+
+        }
+
+        if (dateDebut && dateFin && projectStartDate && projectEndDate) {
+
+            const taskDates = { start: projectStartDate, end: projectEndDate };
+            const actionDates = { start: dateDebut, end: dateFin };
+            const { isValid, messages } = compareDateRangesTask(taskDates, actionDates);
+
+            if (!isValid) {
+                messages.forEach(message => setMessage(message));
+            } else {
+                setMessage('');
+                console.log("Dates are valid, proceeding...");
             }
-        }, [response, history,dateDebut, dateFin]);
+        }
 
-        const AddData = async () => {
-            try {
-                if (!libelle) {
-                    toast.error("Le nom du projet est requis.");
-                    return;
-                }
+        if (response && response.data && response.code === 201) {
 
-                if (!Priority) {
-                    toast.error("La priorité est requise.");
-                    return;
-                }
-                if (!state) {
-                    toast.error("L'état du projet est requis.");
-                    return;
-                }
-                if (!dateDebut) {
-                    toast.error("La date de début est requise.");
-                    return;
-                }
-                if (!dateFin) {
-                    toast.error("La date de fin est requise.");
-                    return;
-                }
-                if (!description) {
-                    toast.error("La description est requise.");
-                    return;
-                }
-                if (!heurs) {
-                    toast.error("L'heurs du projet est requis.");
-                    return;
-                }
-                if (!User) {
-                    toast.error("L'Attribuer la tâche à un membre de l'équipe est requise.");
-                    return;
-                }
+            SetLoad(false);
+            toast.success("Tâche crée avec réussie !");
 
-                SetLoad(true);
+            setTimeout(() => {
+                navigate(`/auth/Admin/detail/projets/${id}`);
+            }, 3000);
 
-                const taskData = {
-                    taskName: libelle,
-                    taskNombreHeurs: heurs,
-                    taskPriority: Priority,
-                    taskStartDate: dateDebut,
-                    taskEndDate: dateFin,
-                    taskDescription: description,
-                    taskState: state,
-                    taskNombreJours: nbDay,
-                    prioColor: prioColor,
-                    stateColor: stateColor,
-                    progress: '0',
-                    assigned: User,
-                    projectCodes: id, // Ajout de projectId ici
-                    userId: "1"    // Ajout de userId ici
-                };
+        } else if (response) {
+            
+            SetLoad(false);
+            toast.error("Erreur lors de la connexion. Veuillez réessayer.");
+        }
 
-                const apiResponse = await SaveTask(taskData);
-                setResponse(apiResponse);
-                SetLoad(false);
+    }, [response, history, dateDebut, dateFin]);
 
-            } catch (error) {
+    const AddData = async () => {
+        try {
+            if (!libelle) {
+                toast.error("Le nom du projet est requis.");
+                return;
+            }
 
-                console.error('Erreur lors de l\'ajout du projet :', error);
-                toast.error(`Erreur lors de l'ajout du projet :`);
-                SetLoad(false);
+            if (!Priority) {
+                toast.error("La priorité est requise.");
+                return;
+            }
+            if (!state) {
+                toast.error("L'état du projet est requis.");
+                return;
+            }
+            if (!dateDebut) {
+                toast.error("La date de début est requise.");
+                return;
+            }
+            if (!dateFin) {
+                toast.error("La date de fin est requise.");
+                return;
+            }
+            if (!description) {
+                toast.error("La description est requise.");
+                return;
+            }
+            if (!heurs) {
+                toast.error("L'heurs du projet est requis.");
+                return;
+            }
+            if (!User) {
+                toast.error("L'Attribuer la tâche à un membre de l'équipe est requise.");
+                return;
+            }
+
+            SetLoad(true);
+
+            const taskData = {
+                taskName: libelle,
+                taskNombreHeurs: heurs,
+                taskPriority: Priority,
+                taskStartDate: dateDebut,
+                taskEndDate: dateFin,
+                taskDescription: description,
+                taskState: state,
+                taskNombreJours: nbDay,
+                prioColor: prioColor,
+                stateColor: stateColor,
+                progress: '0',
+                assigned: User,
+                projectCodes: id, // Ajout de projectId ici
+                userId: userId!.toString(),   // Ajout de userId ici
             };
+
+            const apiResponse = await SaveTask(taskData);
+            setResponse(apiResponse);
+            SetLoad(false);
+
+        } catch (error) {
+
+            console.error('Erreur lors de l\'ajout du projet :', error);
+            toast.error(`Erreur lors de l'ajout du projet :`);
+            SetLoad(false);
         };
+    };
 
     return (
 
@@ -183,13 +245,13 @@ const AddTask: React.FC = () => {
                                 </div>
 
                                 <div className="mb-5">
-                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="Username">Priorité <span className="text-red-700">  *</span></label>
-                                    <SelectPriorite  placeholder1={placeholder1} setPriority={setPriority} SetPrioColor={SetPrioColor} />
+                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="Username">Priorité <span className="text-red-700">  * </span></label>
+                                    <SelectPriorite2  placeholder1={placeholder1} setPriority={setPriority} SetPrioColor={SetPrioColor} priorityValue={Priority} />
                                 </div>
 
                                 <div className="mb-5">
                                     <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="Username">Status </label>
-                                    <SelectState placeholder2={placeholder2} setState={setState}  defaultDisabled={true}  />
+                                    <SelectState2 placeholder2={placeholder2} setState={setState}  defaultDisabled={true} stateValue={state}   />
                                 </div>
                                 
                                 <div className="mb-5 flex flex-col gap-5.5 sm:flex-row">
@@ -197,29 +259,32 @@ const AddTask: React.FC = () => {
                                     <div className="w-full sm:w-1/2">
                                         <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Date de debut <span className="text-red-700"> *</span> </label>
                                         <div className="relative">
-                                        {/* datetime-local */}
-                                            <input className="w-full rounded border  border-stroke  py-2 pl-11.5 pr-4.5 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black"
-                                                type="date"
-                                                placeholder=""
-                                                value={dateDebut}
-                                                onChange={(e) => setDateDebut(e.target.value)}
-                                                // required
-                                            />
+                                            {/* datetime-local */}
+                                            <input className="w-full rounded border  border-stroke  py-2 pl-11.5 pr-4.5 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black" type="datetime-local" placeholder="" value={dateDebut} onChange={(e) => setDateDebut(e.target.value)}/>
                                         </div>
                                     </div>
 
                                     <div className="w-full sm:w-1/2">
 
                                         <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Date de fin <span className="text-red-700">  *</span>  </label>
-                                        <input className="w-full rounded border border-stroke  py-2 px-4.5 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black"
-                                            type="date" placeholder="" value={dateFin} onChange={(e) => setDateFin(e.target.value)}
+                                        <input className="w-full rounded border border-stroke  py-2 px-4.5 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black" type="datetime-local" placeholder="" value={dateFin} onChange={(e) => setDateFin(e.target.value)}
                                         />
                                     </div>
+
+                                </div>
+
+                                <div>
+                                    {message ? (
+                                        <div className="bg-red-100 border border-red-700 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                            <span className="text-red-800 font-medium">Erreur :</span> {message}
+                                        </div>
+                                    ) : null}
                                 </div>
 
                                 {nbDay ? (
                                     <div className="mb-5">
                                         <p> La durée estimée de cette tâche est de {nbDay} Jours </p>
+                                        <span className="text-red-800"> {msg}</span>
                                     </div>
                                         ) : (
                                     <div className="mb-5"> </div>
@@ -227,34 +292,40 @@ const AddTask: React.FC = () => {
 
 
                                 <div className="mb-5">
-                                <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Description <span className="text-red-700">  *</span>  </label>
+                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Description <span className="text-red-700">  *</span>  </label>
                                     <QuillEditor value={description} onChange={setDescription} />
                                 </div>
 
                                 <div className="mb-5">
-                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="Username">Nombre d'heures estimé pour cette tâche.<span className="text-red-700">  *</span></label>
-                                    <input value={heurs} onChange={() => {setHeurs}} className="w-full rounded-lg border border-stroke py-2 px-4 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black" type="number" name="Libelet" placeholder="Saisir le nom du projet"
-                                    />
+                                    <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="Username">Nombre d'heures estimé pour cette tâche.<span className="text-red-700">  * </span></label>
+                                    <input value={heurs} onChange={(event) => { setHeurs(event.target.value); }} className="w-full rounded-lg border border-stroke py-2 px-4 text-black focus:border-black focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-black" type="number" name="heurs" placeholder="2H"/>
                                 </div>
 
                                 <label className="mb-4.5 block text-lg font-medium text-black dark:text-white">
                                     UTILISATEUR
                                 </label>
                                     <div className="mb-5">
-                                        <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Attribuer la tâche à un membre de l'équipe <span className="text-red-700">  *</span>  </label>
-                                        <SelectOneUsers setUsers={setUsers} />
+                                        <label className="mb-3 block text-lg font-medium text-black dark:text-white" htmlFor="fullName" > Assigner la tâche à un utilisateur <span className="text-red-700">  *</span>  </label>
+                                        <SelectOneUsers activeUser={User} codes={id!} setUsers={setUsers} />
                                     </div>
                                     
 
                                 {Load ? (
                                     <Loading/>
                                     ) : (
-                                        <div className="mb-10 flex justify-end gap-4.5">
-                                            <button className="flex justify-center rounded-lg border border-[#012340] py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white" onClick={handleAddTask}  type="button" >ANNULER</button>
-                                            <button className="flex justify-center rounded-lg bg-[#012340] py-2 px-6 font-medium text-gray hover:bg-opacity-90" type="button" onClick={AddData} >
-                                                AJOUTER
-                                            </button>
-                                        </div>
+
+                                    <div className="mb-10 flex justify-end gap-4.5">
+
+                                        <button className="flex justify-center rounded-lg border border-[#012340] py-2 px-6 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white" onClick={handleAddTask}  type="button" >ANNULER</button>
+
+                                    {message ? (
+                                        null
+                                        ) :
+                                        <button className="flex justify-center rounded-lg bg-[#012340] py-2 px-6 font-medium text-gray hover:bg-opacity-90" type="button" onClick={AddData} >
+                                            AJOUTER
+                                        </button>}
+                                    </div>
+
                                     )}
 
                             </form>

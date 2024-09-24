@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { getProjectUsers} from '../../services/ProjectService'
-import { BaseResponse } from '../../interfaces/ApiResponse';
-import {UserListes } from '../../interfaces/UserListes';
 import {ProjectsDetails } from '../../interfaces/Global';
 import UserOne from '../../images/user/user-01.png';
 
@@ -40,9 +38,7 @@ const UserListeModal: React.FC<UserListeModalProps> = ({isOpen,  onClose, title,
 
     useEffect(() => {
 
-        if (id) {
-            listesUsers(id);
-        }
+        listesUsers(id!);
         
         }, [id]);
 
@@ -88,7 +84,7 @@ const UserListeModal: React.FC<UserListeModalProps> = ({isOpen,  onClose, title,
                                         </thead>
                                         <tbody>
 
-                                        {response && response.users.length > 0 ? (
+                                        {response && response.users.length> 0 ? (
 
                                         response.users.map((user, index) => (
 

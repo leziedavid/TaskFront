@@ -7,12 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "HOST=192.168.0.100 react-scripts start"
+    "start": "vite"
   },
   "author": {
-    "name": "TailAdmin",
-    "email": "hello@tailadmin.com",
-    "url": "https://tailadmin.com"
+    "name": "tdlleziee",
+    "email": "lezie04@gmail.com"
   },
   "dependencies": {
     "apexcharts": "^3.52.0",

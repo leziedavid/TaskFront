@@ -16,6 +16,7 @@ const DropdownUser = () => {
   const [response, setResponse] = useState<BaseResponse<Donnees> | null>(null);
   const username = localStorage.getItem('users');
   const roles = localStorage.getItem('authorisation');
+  const profil = `${process.env.REACT_APP_FILE_BASE_URL}/${localStorage.getItem('profil')}`;
 
   const navigate = useNavigate();
 
@@ -34,12 +35,10 @@ const DropdownUser = () => {
 
             console.error('Failed to logout:', error);
             toast.error('Échec de la déconnexion');
-            // Gérer les erreurs de déconnexion côté client si nécessaire
         }
     } else {
 
         console.warn('No access token found in localStorage');
-        // Gérer le cas où aucun token n'est trouvé dans localStorage
     }
 };
 
@@ -49,6 +48,10 @@ console.log(response?.code);
   if (response && response.code === 200) {
     
     localStorage.removeItem('token');
+    localStorage.removeItem('profil');
+    localStorage.removeItem('users');
+    localStorage.removeItem('version');
+    localStorage.removeItem('authorisation');
     toast.success('Déconnexion réussie');
     // Gérer la déconnexion côté client si nécessaire
     navigate('/auth/signin');
@@ -66,9 +69,10 @@ console.log(response?.code);
     <Link onClick={() => setDropdownOpen(!dropdownOpen)} className="flex items-center gap-4" to="#" >
 
 
-      <span className="h-12 w-12 rounded-full">
-          <img src={UserOne} alt="User" />
+        <span className="h-9 w-9 rounded-full overflow-hidden">
+          <img src={profil} alt="User" className="h-full w-full object-cover rounded-full" />
         </span>
+
 
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">

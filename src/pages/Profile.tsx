@@ -120,16 +120,28 @@ const Profile = () => {
       formData.append('role', role);
       formData.append('departmentId', Department);
       formData.append('password', password);
-      formData.append('profil', fichier!); // Fichier de la photo de profil
-  
+      formData.append('profil', fichier!);
+      const version = localStorage.getItem('version');
+
       try {
-          const apiResponse = await updateUser(id!, formData);
-          setResponse(apiResponse);
-          SetLoad(false);
+
+        if (version) {
+          const idUsers = parseInt(version.slice(1), 10);
+
+          if (idUsers) {
+            const idUsersString = `${idUsers}`;
+            const apiResponse = await updateUser(idUsersString,formData);
+            setResponse(apiResponse);
+            getUserById();
+            SetLoad(false);
+          }
+        }
 
       } catch (error) {
+
           SetLoad(false);
           console.error('Erreur lors de l\'ajout du projet :', error);
+
       }
   };
 
@@ -177,7 +189,9 @@ const Profile = () => {
 
         if (version) {
           const id = parseInt(version.slice(1), 10);
-        if (id) {
+        
+          if (id) {
+
           const res = await getUserByIdWithDepartments(id);
           const datas = res.data;
           // console.log(datas.fonction);
@@ -188,12 +202,14 @@ const Profile = () => {
           setFonctions(datas.fonction);
           setCompteName(datas.username);
           setRole(datas.role);
-          setImageSrc(datas.profil);
+          setImageSrc( `${process.env.REACT_APP_FILE_BASE_URL}/${datas.profil}`);
           setUserCreatedAt(datas.usersCreatedAt)
           setDataDepartment(datas.departments);
           setGenre(datas.genre);
+          localStorage.setItem('profil',datas.profil);
 
         }
+
       }
 
       } catch (error) {
@@ -208,11 +224,11 @@ const Profile = () => {
       <Breadcrumb pageTilte="Dashboard" pageElement="Detail" pageName="profile" />
 
       <div className="col-span-12">
-      <div className="rounded-lg border border-stroke bg-white py-3 shadow-default dark:border-strokedark dark:bg-boxdark flex items-start px-4">
+      <div className="rounded-lg border border-stroke bg-white py-3 shadow-default dark:border-strokedark dark:bg-boxdark flex items-start flex-col sm:flex-row px-4">
 
         <div className="flex-1 bg-gray-100  rounded-sm p-4 mx-2 flex items-center space-x-4">
           <div className="w-[100px] h-[100px] bg-gray-300 rounded-full flex-shrink-0 flex items-center justify-center">
-            <img src={UserOne} alt="Image de Profil" className="w-[150px] h-[100px] rounded-full" />
+            <img src={imageSrc || userThree } alt="Image de Profil" className="w-[150px] h-[100px] object-cover rounded-full" />
           </div>
           <div>
             <h3 className="text-[25px] text-black font-medium">{firstname} - {lastname}</h3>
@@ -221,14 +237,12 @@ const Profile = () => {
           </div>
         </div>
         
-        <div className="border-l border-dotted border-gray-300 mx-2 h-60"></div>
-
+        <div className="border-l border-dotted border-gray-300 mx-2 h-60 hidden sm:block"></div>
         <div className="flex-1 bg-gray-100  rounded-sm p-4 mx-2">
           <h3 className="text-[25px] text-black font-medium mb-2">Informations</h3>
           <p className="text-lg text-black font-medium mb-1"><strong>Nom :</strong> {compteName}</p>
           <p className="text-lg  mb-1"><strong>Numéro de téléphone :</strong>{phone}</p>
           <p className="text-lg mb-1"><strong>Email :</strong> {email}</p>
-          {/* <p className="text-lg  mb-1"><strong>Département :</strong> {Department}</p> */}
           <p className="text-lg "><strong>Rôle :</strong> {role}</p>
         </div>
 
@@ -257,9 +271,8 @@ const Profile = () => {
               <div className="relative mb-8 flex items-center justify-center gap-3">
 
                 <div className="relative">
-                  {imageSrc}
-                  {/* Image */}
-                  <img src={imageSrc || userThree} alt="User" className="mb-3 h-35 w-35 border rounded-full" />
+
+                  <img src={imageSrc || userThree} alt="User" className="mb-3 h-30 w-30 border  object-cover rounded-full" />
 
                   {/* Input file caché */}
                   <input type="file" ref={fileInputRef} // Assigner la référence à l'élément input

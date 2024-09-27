@@ -16,6 +16,7 @@ import { BaseResponse } from '../../interfaces/ApiResponse';
       message: string;
       role: string;
       username: string;
+      profil: string;
     }
   const [showPassword, setShowPassword] = useState(false);
   const togglePasswordVisibility = () => setShowPassword(!showPassword);
@@ -34,6 +35,7 @@ useEffect(() => {
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('authorisation', response.data.role);
     localStorage.setItem('users', response.data.username);
+    localStorage.setItem('profil', response.data.profil);
     const username = response.data.userId;
     const version = `@${username}`;
     localStorage.setItem('version',version);

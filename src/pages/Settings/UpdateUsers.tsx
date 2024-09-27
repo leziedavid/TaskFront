@@ -175,7 +175,8 @@ const AddUsers = () => {
             setFonctions(datas.fonction);
             setCompteName(datas.username);
             setRole(datas.role);
-            setImageSrc(datas.profil);
+            setImageSrc( `${process.env.REACT_APP_FILE_BASE_URL}/${datas.profil}`);
+            // setImageSrc(datas.profil);
             setDataDepartment(datas.departments);
             setGenre(datas.genre);
 
@@ -221,13 +222,10 @@ const AddUsers = () => {
                                     <div className="relative mb-8 flex items-center justify-center gap-3">
                                         
                                         <div className="relative">
-                                            {imageSrc}
-                                            {/* Image */}
+                                            {/* {imageSrc} */}
                                             <img src={imageSrc || userThree} alt="User" className="mb-3 h-35 w-35 border rounded-full" />
 
-                                            {/* Input file caché */}
-                                            <input type="file" ref={fileInputRef} // Assigner la référence à l'élément input
-                                                className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileChange}/>
+                                            <input type="file" ref={fileInputRef} className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleFileChange}/>
 
                                             {/* SVG pour ouvrir le input file */}
                                             <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute right-2 bottom-2 transform -translate-x-2 -translate-y-2 cursor-pointer"
@@ -237,9 +235,9 @@ const AddUsers = () => {
                                             </svg>
                                         </div>
 
-                                        <span className="flex gap-2">
+                                        {/* <span className="flex gap-2">
                                             <button className="text-lg hover:text-primary">Supprimer</button>
-                                        </span>
+                                        </span> */}
 
                                     </div>
 

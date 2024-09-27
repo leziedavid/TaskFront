@@ -90,6 +90,7 @@ const Comptes: React.FC = () => {
         if (res.code === 200) {
             // Afficher un message de succès
             toast.success(res.messages);
+            localStorage.setItem('profil', res.data.profil);
             // Mettre à jour l'état des utilisateurs
             setResponse(prev =>
                 prev ? prev.map(user =>
@@ -234,13 +235,12 @@ const Comptes: React.FC = () => {
 
                                                         <td className={`px-4 py-4 text-sm font-medium ${index % 2 === 0 ? 'bg-[#EBF1FA]' : 'bg-white'} text-gray-700 whitespace-nowrap`}>
                                                             <div className="inline-flex items-center gap-x-3">
-
                                                             <span className={`text-white text-xs font-medium me-2 px-2.5 py-0.5 rounded-full ${
-                                                                user.role === 'ADMIN' ? 'bg-[#D32F2F]' : // Red
-                                                                user.role === 'GLOBAL_ADMIN' ? 'bg-[#F57C00]' : // Blue
-                                                                user.role === 'USER' ? 'bg-[#033F73]' : // Green
-                                                                user.role === 'MANAGER' ? 'bg-[#038C4C]' : // Orange
-                                                                'bg-gray-500' // Default gray for unknown roles
+                                                                user.role === 'ADMIN' ? 'bg-[#D32F2F]' :
+                                                                user.role === 'GLOBAL_ADMIN' ? 'bg-[#F57C00]' :
+                                                                user.role === 'USER' ? 'bg-[#033F73]' :
+                                                                user.role === 'MANAGER' ? 'bg-[#038C4C]' :
+                                                                'bg-gray-500'
                                                             }`}>
                                                                 {user.role}
                                                             </span>
@@ -270,10 +270,11 @@ const Comptes: React.FC = () => {
                                                                 </svg>
                                                             </button>
 
-                                                            <button onClick={() => openModalleaveEdit(user.userId,0)}  className="focus:outline-none" aria-label="Icon 3" >
-                                                                <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                                    <path d="M12.5 9.5C11.7044 9.5 10.9413 9.81607 10.3787 10.3787C9.81607 10.9413 9.5 11.7044 9.5 12.5C9.5 13.2956 9.81607 14.0587 10.3787 14.6213C10.9413 15.1839 11.7044 15.5 12.5 15.5C13.2956 15.5 14.0587 15.1839 14.6213 14.6213C15.1839 14.0587 15.5 13.2956 15.5 12.5C15.5 11.7044 15.1839 10.9413 14.6213 10.3787C14.0587 9.81607 13.2956 9.5 12.5 9.5ZM12.5 17.5C11.1739 17.5 9.90215 16.9732 8.96447 16.0355C8.02678 15.0979 7.5 13.8261 7.5 12.5C7.5 11.1739 8.02678 9.90215 8.96447 8.96447C9.90215 8.02678 11.1739 7.5 12.5 7.5C13.8261 7.5 15.0979 8.02678 16.0355 8.96447C16.9732 9.90215 17.5 11.1739 17.5 12.5C17.5 13.8261 16.9732 15.0979 16.0355 16.0355C15.0979 16.9732 13.8261 17.5 12.5 17.5ZM12.5 5C7.5 5 3.23 8.11 1.5 12.5C3.23 16.89 7.5 20 12.5 20C17.5 20 21.77 16.89 23.5 12.5C21.77 8.11 17.5 5 12.5 5Z" fill="black" />
-                                                                </svg>
+                                                            <button onClick={() => openModalleaveEdit(user.userId,0)} className="focus:outline-none" aria-label="Icon 3" >
+                                                                    <svg className="fill-current" width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" >
+                                                                        <path d="M15.7499 2.9812H14.2874V2.36245C14.2874 2.02495 14.0062 1.71558 13.6405 1.71558C13.2749 1.71558 12.9937 1.99683 12.9937 2.36245V2.9812H4.97803V2.36245C4.97803 2.02495 4.69678 1.71558 4.33115 1.71558C3.96553 1.71558 3.68428 1.99683 3.68428 2.36245V2.9812H2.2499C1.29365 2.9812 0.478027 3.7687 0.478027 4.75308V14.5406C0.478027 15.4968 1.26553 16.3125 2.2499 16.3125H15.7499C16.7062 16.3125 17.5218 15.525 17.5218 14.5406V4.72495C17.5218 3.7687 16.7062 2.9812 15.7499 2.9812ZM1.77178 8.21245H4.1624V10.9968H1.77178V8.21245ZM5.42803 8.21245H8.38115V10.9968H5.42803V8.21245ZM8.38115 12.2625V15.0187H5.42803V12.2625H8.38115ZM9.64678 12.2625H12.5999V15.0187H9.64678V12.2625ZM9.64678 10.9968V8.21245H12.5999V10.9968H9.64678ZM13.8374 8.21245H16.228V10.9968H13.8374V8.21245ZM2.2499 4.24683H3.7124V4.83745C3.7124 5.17495 3.99365 5.48433 4.35928 5.48433C4.7249 5.48433 5.00615 5.20308 5.00615 4.83745V4.24683H13.0499V4.83745C13.0499 5.17495 13.3312 5.48433 13.6968 5.48433C14.0624 5.48433 14.3437 5.20308 14.3437 4.83745V4.24683H15.7499C16.0312 4.24683 16.2562 4.47183 16.2562 4.75308V6.94683H1.77178V4.75308C1.77178 4.47183 1.96865 4.24683 2.2499 4.24683ZM1.77178 14.5125V12.2343H4.1624V14.9906H2.2499C1.96865 15.0187 1.77178 14.7937 1.77178 14.5125ZM15.7499 15.0187H13.8374V12.2625H16.228V14.5406C16.2562 14.7937 16.0312 15.0187 15.7499 15.0187Z"
+                                                                            fill="" />
+                                                                    </svg>
                                                             </button>
 
                                                             </div>

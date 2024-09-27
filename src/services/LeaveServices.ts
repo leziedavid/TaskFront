@@ -3,11 +3,11 @@
 import { BaseResponse } from '../interfaces/ApiResponse';
 
 const BASE_URL = 'http://localhost:8090/api/v1';
-
+import { getBaseUrl } from "./baseUrl";
 // Fonction pour ajouter un congé
 export const saveLeaves = async (data: any): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/leave/addLeave`, {
+        const response = await fetch(`${getBaseUrl()}/leave/addLeave`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -25,7 +25,7 @@ export const saveLeaves = async (data: any): Promise<BaseResponse<any>> => {
 // Fonction pour obtenir un congé par ID
 export const getLeavesById = async (id: number): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/leave/getLeaveById/${id}`);
+        const response = await fetch(`${getBaseUrl()}/leave/getLeaveById/${id}`);
         if (!response.ok) {
             throw new Error('Erreur lors de la récupération du congé');
         }
@@ -39,7 +39,7 @@ export const getLeavesById = async (id: number): Promise<BaseResponse<any>> => {
 // Fonction pour obtenir tous les congés
 export const getAllLeaves = async (): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/leave/getAllLeaves`);
+        const response = await fetch(`${getBaseUrl()}/leave/getAllLeaves`);
         if (!response.ok) {
             throw new Error('Erreur lors de la récupération des congés');
         }
@@ -53,7 +53,7 @@ export const getAllLeaves = async (): Promise<BaseResponse<any>> => {
 // Fonction pour obtenir les congés par ID utilisateur
 export const getLeavesByUserId = async (userId: number): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/leave/getLeavesByUserId/${userId}`);
+        const response = await fetch(`${getBaseUrl()}/leave/getLeavesByUserId/${userId}`);
         if (!response.ok) {
             throw new Error('Erreur lors de la récupération des congés pour l\'utilisateur');
         }
@@ -67,7 +67,7 @@ export const getLeavesByUserId = async (userId: number): Promise<BaseResponse<an
 // Fonction pour mettre à jour un congé
 export const updateLeave = async (id: number, data: any): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/leave/updateLeave/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/leave/updateLeave/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data),
@@ -85,7 +85,7 @@ export const updateLeave = async (id: number, data: any): Promise<BaseResponse<a
 // Fonction pour supprimer un congé
 export const deleteLeave = async (id: number): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/leave/deleteLeave/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/leave/deleteLeave/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) {
@@ -101,7 +101,7 @@ export const deleteLeave = async (id: number): Promise<BaseResponse<any>> => {
 // Fonction pour mettre à jour le statut d'un congé
 export const updateLeaveStatus = async (leaveId: number, status: string): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/leave/update-leave-status?leaveId=${leaveId}&status=${status}`, {
+        const response = await fetch(`${getBaseUrl()}/leave/update-leave-status?leaveId=${leaveId}&status=${status}`, {
             method: 'POST',
         });
         if (!response.ok) {

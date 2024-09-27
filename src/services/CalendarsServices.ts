@@ -3,7 +3,7 @@ import { toast } from 'react-toastify';
 import { BaseResponse } from '../interfaces/ApiResponse';
 import { TaskDataCalendar } from '../interfaces/CalendarsData';
 const BASE_URL = 'http://localhost:8090/api/v1';
-
+import { getBaseUrl } from "./baseUrl";
 
 
 export const getCalendarsData = async (startDate?: Date,endDate?: Date)=> {
@@ -13,7 +13,7 @@ export const getCalendarsData = async (startDate?: Date,endDate?: Date)=> {
         const startDateStr = startDate ? startDate.toISOString() : '';
         const endDateStr = endDate ? endDate.toISOString() : '';
 
-        const response = await fetch(`${BASE_URL}/tasks/calendars?startDate=${startDateStr}&endDate=${endDateStr}`, {
+        const response = await fetch(`${getBaseUrl()}/tasks/calendars?startDate=${startDateStr}&endDate=${endDateStr}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Ajoute le préfixe 'Bearer ' au token JWT

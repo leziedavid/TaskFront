@@ -2,7 +2,7 @@
 
 import { BaseResponse } from '../interfaces/ApiResponse';
 import { NotificationDTO } from '../interfaces/Notification'; // Assurez-vous que le chemin est correct
-
+import { getBaseUrl } from "./baseUrl";
 const BASE_URL = 'http://localhost:8090/api/v1';
 
 // Définir le type pour la réponse de l'API
@@ -13,7 +13,7 @@ export const getNotificationsByProjectId = async (projectCode: string): Promise<
     const token = localStorage.getItem('token');
 
     try {
-        const response = await fetch(`${BASE_URL}/notifications/getByProjectId/${projectCode}`,
+        const response = await fetch(`${getBaseUrl()}/notifications/getByProjectId/${projectCode}`,
             {
                 method: 'GET',
                 headers: {
@@ -48,7 +48,7 @@ export const getNotificationsById = async (projectCode: string):  Promise<BaseRe
     const token = localStorage.getItem('token');
 
     try {
-        const response = await fetch(`${BASE_URL}/notifications/getNotificationById/${projectCode}`,
+        const response = await fetch(`${getBaseUrl()}/notifications/getNotificationById/${projectCode}`,
             {
                 method: 'GET',
                 headers: {
@@ -71,7 +71,7 @@ export const getUnreadNotifications = async (): Promise<BaseResponse<any>>  => {
     const token = localStorage.getItem('token');
 
     try {
-        const response = await fetch(`${BASE_URL}/notifications/getUnreadNotifications`,
+        const response = await fetch(`${getBaseUrl()}/notifications/getUnreadNotifications`,
             {
                 method: 'GET',
                 headers: {

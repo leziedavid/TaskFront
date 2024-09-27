@@ -1,10 +1,11 @@
 // src/services/ApiService.ts
 import { BaseResponse } from '../interfaces/ApiResponse';
 const BASE_URL = 'http://localhost:8090/api/v1';
+import { getBaseUrl } from "./baseUrl";
 
     export const SaveDepartement = async (data: any): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/departments/Adddepartments`, {
+        const response = await fetch(`${getBaseUrl()}/departments/Adddepartments`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json',},
             body: data,
@@ -21,7 +22,7 @@ const BASE_URL = 'http://localhost:8090/api/v1';
 
 export const getAllDepartement = async () => {
     try {
-        const response = await fetch(`${BASE_URL}/departments/getAllDepartments`);
+        const response = await fetch(`${getBaseUrl()}/departments/getAllDepartments`);
         if (!response.ok) {
             throw new Error('Failed to fetch departments');
         }
@@ -33,7 +34,7 @@ export const getAllDepartement = async () => {
 };
 export const removeDepartement = async (id: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/department/deleteDepartment/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/department/deleteDepartment/${id}`, {
             method: 'DELETE'
         });
         if (!response.ok) {
@@ -48,7 +49,7 @@ export const removeDepartement = async (id: number) => {
 
 export const getDepartementById  = async (id: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/departments/getDepartmentById/${id}`);
+        const response = await fetch(`${getBaseUrl()}/departments/getDepartmentById/${id}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch project details');
@@ -64,7 +65,7 @@ export const getDepartementById  = async (id: number) => {
 export const updateDepartement = async (id: number, data: any): Promise<BaseResponse<any>> => {
 
     try {
-        const response = await fetch(`${BASE_URL}/actions/updateAction/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/actions/updateAction/${id}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json', // Spécifier le type de contenu comme JSON
             },

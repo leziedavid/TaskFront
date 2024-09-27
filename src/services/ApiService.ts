@@ -2,12 +2,13 @@
 import { toast } from 'react-toastify';
 import { BaseResponse } from '../interfaces/ApiResponse';
 import { User } from '../interfaces/Global';
+import { getBaseUrl } from "./baseUrl";
 
 const BASE_URL = 'http://localhost:8090/api/v1';
 
 export const signIn = async (email: string, password: string): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/auth/login`, {
+        const response = await fetch(`${getBaseUrl()}/auth/login`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json',},
             body: JSON.stringify({ email, password }),
@@ -23,7 +24,7 @@ export const signIn = async (email: string, password: string): Promise<BaseRespo
 // Fonction pour s'inscrire
 export const signUp = async (username: string, email: string, password: string): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/signup`, {
+        const response = await fetch(`${getBaseUrl()}/signup`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -47,7 +48,7 @@ export const signUp = async (username: string, email: string, password: string):
 
 export const sendOTP = async (email: string): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/send-otp`, {
+        const response = await fetch(`${getBaseUrl()}/send-otp`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ export const sendOTP = async (email: string): Promise<BaseResponse<any>> => {
 // Fonction pour vérifier le code OTP
 export const verifyOTP = async (email: string, otp: string): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/verify-otp`, {
+        const response = await fetch(`${getBaseUrl()}/verify-otp`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ export const verifyOTP = async (email: string, otp: string): Promise<BaseRespons
 // Fonction pour réinitialiser le mot de passe
 export const resetPassword = async (email: string): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/reset-password`, {
+        const response = await fetch(`${getBaseUrl()}/reset-password`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -111,7 +112,7 @@ export const resetPassword = async (email: string): Promise<BaseResponse<any>> =
 
 export const changePassword = async (email: string, password: string,otp: string): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/ResetPassword`, {
+        const response = await fetch(`${getBaseUrl()}/ResetPassword`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -131,7 +132,7 @@ export const changePassword = async (email: string, password: string,otp: string
 };
 export const logout = async (token: string): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/auth/logout`, {
+        const response = await fetch(`${getBaseUrl()}/auth/logout`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -153,7 +154,7 @@ export const logout = async (token: string): Promise<BaseResponse<any>> => {
 // Service pour récupérer l'ID de l'utilisateur à partir du token JWT
 export const getUserIdFromToken = async (token: string): Promise<BaseResponse<number>> => {
     try {
-        const response = await fetch(`${BASE_URL}/auth/userid`, {
+        const response = await fetch(`${getBaseUrl()}/auth/userid`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
@@ -174,7 +175,7 @@ export const getUserIdFromToken = async (token: string): Promise<BaseResponse<nu
 
 export const getUserInfoFromToken = async (token: string): Promise<BaseResponse<User>> => {
     try {
-        const response = await fetch(`${BASE_URL}/auth/userinfo`, {
+        const response = await fetch(`${getBaseUrl()}/auth/userinfo`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT

@@ -1,6 +1,6 @@
-// import { toast } from "react-toastify";
-import { BaseResponse } from "../interfaces/ApiResponse";
 
+import { BaseResponse } from "../interfaces/ApiResponse";
+import { getBaseUrl } from "./baseUrl";
 const BASE_URL = 'http://localhost:8090/api/v1';
 
 
@@ -8,7 +8,7 @@ export const SaveUsers = async (data: FormData): Promise<BaseResponse<any>> => {
 
     try {
 
-        const response = await fetch(`${BASE_URL}/users/addUsers`, {
+        const response = await fetch(`${getBaseUrl()}/users/addUsers`, {
             method: 'POST',
             body: data,
             });
@@ -25,7 +25,7 @@ export const updateUser = async (id: string, data: FormData): Promise<BaseRespon
 
     try {
 
-        const response = await fetch(`${BASE_URL}/users/updateUser/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/users/updateUser/${id}`, {
             method: 'PUT',
             body: data,
         });
@@ -42,7 +42,7 @@ export const updateUser = async (id: string, data: FormData): Promise<BaseRespon
 
 export const getAllUsersService = async () => {
     try {
-        const response = await fetch(`${BASE_URL}/users/getAllUsersByDepartment`);
+        const response = await fetch(`${getBaseUrl()}/users/getAllUsersByDepartment`);
         if (!response.ok) {
             throw new Error('Failed to fetch user');
         }
@@ -56,7 +56,7 @@ export const getAllUsersService = async () => {
 export const updateUsersRoles = async (userId: number, isValides: number | null): Promise<BaseResponse<any>> => {
     try {
         // Construire l'URL avec les paramètres d'URL
-        const url = `${BASE_URL}/users/update-usersRoles?userId=${userId}&isValides=${isValides}`;
+        const url = `${getBaseUrl()}/users/update-usersRoles?userId=${userId}&isValides=${isValides}`;
         // Effectuer la requête POST
         const response = await fetch(url, {
             method: 'POST',
@@ -78,7 +78,7 @@ export const updateUsersRoles = async (userId: number, isValides: number | null)
 
 export const getUserByIdWithDepartments = async (id: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/users/getUserByIdWithDepartments/${id}`);
+        const response = await fetch(`${getBaseUrl()}/users/getUserByIdWithDepartments/${id}`);
         if (!response.ok) {
             throw new Error('Failed to fetch user details');
         }
@@ -92,7 +92,7 @@ export const getUserByIdWithDepartments = async (id: number) => {
 
 export const deleteUser = async (id: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/users/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/users/${id}`, {
             method: 'DELETE'
         });
         if (!response.ok) {

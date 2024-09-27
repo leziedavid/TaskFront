@@ -1,11 +1,11 @@
 // src/services/ApiService.ts
 import { BaseResponse } from '../interfaces/ApiResponse';
-
+import { getBaseUrl } from "./baseUrl";
 const BASE_URL = 'http://localhost:8090/api/v1';
 
 export const SaveTaskObs  = async (data: FormData): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/obs/AddObservation`, {
+        const response = await fetch(`${getBaseUrl()}/obs/AddObservation`, {
             method: 'POST',
             body: data,
             // headers: {'Content-Type': 'application/json',},
@@ -21,7 +21,7 @@ export const SaveTaskObs  = async (data: FormData): Promise<BaseResponse<any>> =
 
 export const removeObs = async (id: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/obs/delete/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/obs/delete/${id}`, {
             method: 'DELETE'
         });
         if (!response.ok) {
@@ -36,7 +36,7 @@ export const removeObs = async (id: number) => {
 
 export const getObsById  = async (actionId: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/obs/getObservationEndFilesById/${actionId}`);
+        const response = await fetch(`${getBaseUrl()}/obs/getObservationEndFilesById/${actionId}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch observation details');
@@ -54,7 +54,7 @@ export const getObsById  = async (actionId: number) => {
 export const updateObs = async (id: number, data: FormData): Promise<BaseResponse<any>> => {
 
     try {
-        const response = await fetch(`${BASE_URL}/obs/updateObservation/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/obs/updateObservation/${id}`, {
             method: 'PUT',
             // headers: {'Content-Type': 'application/json', },
             body: data, // Convertir l'objet JavaScript en chaîne JSON

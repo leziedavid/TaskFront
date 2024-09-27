@@ -1,10 +1,11 @@
 // src/services/ApiService.ts
 import { BaseResponse } from '../interfaces/ApiResponse';
 const BASE_URL = 'http://localhost:8090/api/v1';
+import { getBaseUrl } from "./baseUrl";
 
 export const SaveTaskAction = async (data: any): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/actions/addTaskActions`, {
+        const response = await fetch(`${getBaseUrl()}/actions/addTaskActions`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json',},
             body: JSON.stringify(data),
@@ -22,7 +23,7 @@ export const updateActionStatus = async (actionId: number, isValides: number | n
     try {
         // Construire l'URL avec les paramètres d'URL
         const pourcentage=100;
-        const url = `${BASE_URL}/actions/update-action-status?actionId=${actionId}&isValides=${isValides}&taskId=${TaskId}`;
+        const url = `${getBaseUrl()}/actions/update-action-status?actionId=${actionId}&isValides=${isValides}&taskId=${TaskId}`;
         // Effectuer la requête POST
         const response = await fetch(url, {
             method: 'POST',
@@ -44,7 +45,7 @@ export const updateActionStatus = async (actionId: number, isValides: number | n
 
 export const removeAction = async (id: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/actions/deleteAction/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/actions/deleteAction/${id}`, {
             method: 'DELETE'
         });
         if (!response.ok) {
@@ -59,7 +60,7 @@ export const removeAction = async (id: number) => {
 
 export const getActionsByTaskId  = async (TaskId: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/actions/getActionsByTaskId/${TaskId}`);
+        const response = await fetch(`${getBaseUrl()}/actions/getActionsByTaskId/${TaskId}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch action details');
@@ -74,7 +75,7 @@ export const getActionsByTaskId  = async (TaskId: number) => {
 
 export const getActionById  = async (actionId: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/actions/getActionById/${actionId}`);
+        const response = await fetch(`${getBaseUrl()}/actions/getActionById/${actionId}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch action details');
@@ -91,7 +92,7 @@ export const getActionById  = async (actionId: number) => {
 export const updateActions = async (id: number, data: any): Promise<BaseResponse<any>> => {
 
     try {
-        const response = await fetch(`${BASE_URL}/actions/updateAction/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/actions/updateAction/${id}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json', // Spécifier le type de contenu comme JSON
             },

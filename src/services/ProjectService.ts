@@ -4,13 +4,13 @@ import { BaseResponse } from '../interfaces/ApiResponse';
 import { Project } from '../interfaces/Global';
 import { Department } from '../interfaces/Global';
 const BASE_URL = 'http://localhost:8090/api/v1';
-
+import { getBaseUrl } from "./baseUrl";
 
 
 export const getAllUsersByMultipleDepartment = async (department: any) => {
     try {
         
-        const response = await fetch(`${BASE_URL}/departments/users?ids=${department}`);
+        const response = await fetch(`${getBaseUrl()}/departments/users?ids=${department}`);
         if (!response.ok) {
             throw new Error('Failed to fetch departments');
         }
@@ -22,7 +22,7 @@ export const getAllUsersByMultipleDepartment = async (department: any) => {
 };
 export const getAllUsersByDepartment = async (department: any) => {
     try {
-        const response = await fetch(`${BASE_URL}/departments/${department}/users`);
+        const response = await fetch(`${getBaseUrl()}/departments/${department}/users`);
         if (!response.ok) {
             throw new Error('Failed to fetch departments');
         }
@@ -36,7 +36,7 @@ export const getAllUsersByDepartment = async (department: any) => {
 export const getAllDepartments = async () => {
     try {
 
-        const response = await fetch(`${BASE_URL}/departments/getAllDepartments`);
+        const response = await fetch(`${getBaseUrl()}/departments/getAllDepartments`);
         if (!response.ok) {
             throw new Error('Failed to fetch departments');
         }
@@ -49,7 +49,7 @@ export const getAllDepartments = async () => {
 
 export const SaveProject = async (data: FormData): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/projects`, {
+        const response = await fetch(`${getBaseUrl()}/projects`, {
             method: 'POST',
             body: data,
             // headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
@@ -69,7 +69,7 @@ export const SaveProject = async (data: FormData): Promise<BaseResponse<any>> =>
 
 export const updateProject = async (id: string, data: FormData): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/update/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/projects/update/${id}`, {
             method: 'PUT',
             body: data,
             // headers: { 'Content-Type': 'multipart/form-data' } // Décommentez cette ligne si nécessaire
@@ -89,7 +89,7 @@ export const updateProject = async (id: string, data: FormData): Promise<BaseRes
 
 export const addNewsFile = async (data: FormData): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/files/addNewsFile`, {
+        const response = await fetch(`${getBaseUrl()}/projects/files/addNewsFile`, {
             method: 'POST',
             body: data
         });
@@ -116,7 +116,7 @@ export const getAllProjects = async (
     const token = localStorage.getItem('token');
 
     // Construire l'URL avec les paramètres de pagination et de tri
-    const url = new URL(`${BASE_URL}/projects/getAllProjects`);
+    const url = new URL(`${getBaseUrl()}/projects/getAllProjects`);
     url.searchParams.append('page', page.toString());
     url.searchParams.append('size', size.toString());
     url.searchParams.append('sortBy', sortBy);
@@ -151,7 +151,7 @@ export const searchProjects = async (
     const token = localStorage.getItem('token');
 
     // Construire l'URL avec les paramètres de recherche, pagination et tri
-    const url = new URL(`${BASE_URL}/projects/search`);
+    const url = new URL(`${getBaseUrl()}/projects/search`);
     if (projectName) {
         url.searchParams.append('projectName', projectName);
     }
@@ -184,7 +184,7 @@ export const getAllProjects2 = async () => {
     const token = localStorage.getItem('token');
     try {
         
-        const response = await fetch(`${BASE_URL}/projects/getAllProjects`, {
+        const response = await fetch(`${getBaseUrl()}/projects/getAllProjects`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
@@ -206,7 +206,7 @@ export const projectsStatistics = async () => {
     const token = localStorage.getItem('token');
     try {
         
-        const response = await fetch(`${BASE_URL}/projects/statistics`, {
+        const response = await fetch(`${getBaseUrl()}/projects/statistics`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
@@ -226,7 +226,7 @@ export const projectsStatistics = async () => {
 
 export const getProjectDetails = async (projectCode: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/detail/${projectCode}`);
+        const response = await fetch(`${getBaseUrl()}/projects/detail/${projectCode}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch project details');
@@ -240,8 +240,8 @@ export const getProjectDetails = async (projectCode: string) => {
 };
 export const getProjectUsers = async (projectCode: string) => {
     try {
-        // const response = await fetch(`${BASE_URL}/projects/getProjectUsersById/${projectCode}`);
-        const response = await fetch(`${BASE_URL}/projects/usersliste/${projectCode}`);
+        // const response = await fetch(`${getBaseUrl()}/projects/getProjectUsersById/${projectCode}`);
+        const response = await fetch(`${getBaseUrl()}/projects/usersliste/${projectCode}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch project details');
@@ -255,7 +255,7 @@ export const getProjectUsers = async (projectCode: string) => {
 };
 export const getProjectUsersById = async (id: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/getProjectUsersById/${id}`);
+        const response = await fetch(`${getBaseUrl()}/projects/getProjectUsersById/${id}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch project details');
@@ -270,7 +270,7 @@ export const getProjectUsersById = async (id: number) => {
 
 export const getProjectByCodes = async (projectCode: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/getProjectByCodes/${projectCode}`);
+        const response = await fetch(`${getBaseUrl()}/projects/getProjectByCodes/${projectCode}`);
         
         if (!response.ok) {
             throw new Error('Failed to fetch project details');
@@ -285,7 +285,7 @@ export const getProjectByCodes = async (projectCode: string) => {
 
 export const deleteProject = async (id: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/delete/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/projects/delete/${id}`, {
             method: 'DELETE'
         });
         if (!response.ok) {
@@ -300,7 +300,7 @@ export const deleteProject = async (id: number) => {
 
 export const changePriority = async (id: number, priority: string, selectedColors: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/updatePriority/${id}?priority=${encodeURIComponent(priority)}&Colors=${encodeURIComponent(selectedColors)}`, {
+        const response = await fetch(`${getBaseUrl()}/projects/updatePriority/${id}?priority=${encodeURIComponent(priority)}&Colors=${encodeURIComponent(selectedColors)}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -316,7 +316,7 @@ export const changePriority = async (id: number, priority: string, selectedColor
 
 export const changeState = async (id: number, state: string, selectedColors: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/updateState/${id}?state=${encodeURIComponent(state)}&Colors=${encodeURIComponent(selectedColors)}`, {
+        const response = await fetch(`${getBaseUrl()}/projects/updateState/${id}?state=${encodeURIComponent(state)}&Colors=${encodeURIComponent(selectedColors)}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -332,7 +332,7 @@ export const changeState = async (id: number, state: string, selectedColors: str
 
 export const assignUsersToProject = async (id: string, data: FormData) => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/assignUsers/${id}/assignUsers`, {
+        const response = await fetch(`${getBaseUrl()}/projects/assignUsers/${id}/assignUsers`, {
             method: 'POST',
             body: data
         });
@@ -350,7 +350,7 @@ export const assignUsersToProject = async (id: string, data: FormData) => {
 
 export const removeUserFromProject = async (projectId: string, userId: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/removeUserFromProject/${projectId}/users/${userId}`, {
+        const response = await fetch(`${getBaseUrl()}/projects/removeUserFromProject/${projectId}/users/${userId}`, {
             method: 'DELETE'
         });
         if (!response.ok) {
@@ -368,7 +368,7 @@ export const removeUserFromProject = async (projectId: string, userId: number) =
 export const  updateGroupLeader = async (projectId: string, currentLeaderId: number, newLeaderId: number) => {
     try {
         
-        const response = await fetch(`${BASE_URL}/projects/updateGroupLeader/${projectId}?currentLeaderId=${encodeURIComponent(currentLeaderId)}&newLeaderId=${encodeURIComponent(newLeaderId)}`, {
+        const response = await fetch(`${getBaseUrl()}/projects/updateGroupLeader/${projectId}?currentLeaderId=${encodeURIComponent(currentLeaderId)}&newLeaderId=${encodeURIComponent(newLeaderId)}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -419,7 +419,7 @@ export const getFilteredProjects = async (
         if (page !== undefined) params.append('page', page.toString());
         if (size !== undefined) params.append('size', size.toString());
 
-        const response = await fetch(`${BASE_URL}/projects/filter?${params.toString()}`, {
+        const response = await fetch(`${getBaseUrl()}/projects/filter?${params.toString()}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
@@ -462,7 +462,7 @@ export const getFilteredProjects2 = async (
         if (startDate) params.append('startDate', startDate);
         if (endDate) params.append('endDate', endDate);
 
-        const response = await fetch(`${BASE_URL}/projects/filter?${params.toString()}`,{
+        const response = await fetch(`${getBaseUrl()}/projects/filter?${params.toString()}`,{
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
@@ -484,7 +484,7 @@ export const getAllProjectsEndTaskByUserId = async ( userId: number): Promise<Ba
     const token = localStorage.getItem('token');
     
     try {
-        const response = await fetch(`${BASE_URL}/projects/user/${userId}`,{
+        const response = await fetch(`${getBaseUrl()}/projects/user/${userId}`,{
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT

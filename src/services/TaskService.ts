@@ -2,12 +2,12 @@
 import { BaseResponse } from '../interfaces/ApiResponse';
 import { ProjectsDetails, Task } from '../interfaces/Global';
 import { TaskDTO } from '../interfaces/ModelsTask';
-
+import { getBaseUrl } from "./baseUrl";
 const BASE_URL = 'http://localhost:8090/api/v1';
 
 export const SaveTask = async (data: any): Promise<BaseResponse<any>> => {
     try {
-        const response = await fetch(`${BASE_URL}/tasks/addTasks`, {
+        const response = await fetch(`${getBaseUrl()}/tasks/addTasks`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json', // Spécifier le type de contenu comme JSON
@@ -29,7 +29,7 @@ export const SaveTask = async (data: any): Promise<BaseResponse<any>> => {
 
 export const deleteTask = async (id: number) => {
     try {
-        const response = await fetch(`${BASE_URL}/tasks/delete/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/tasks/delete/${id}`, {
             method: 'DELETE'
         });
         if (!response.ok) {
@@ -48,7 +48,7 @@ export const getTaskByProjectId = async (projectCode: string) => {
 
     try {
 
-        const response = await fetch(`${BASE_URL}/tasks/getAllTasksByProjectId/${projectCode}`,
+        const response = await fetch(`${getBaseUrl()}/tasks/getAllTasksByProjectId/${projectCode}`,
             {
                 method: 'GET',
                 headers: {
@@ -71,7 +71,7 @@ export const getTaskByProjectId = async (projectCode: string) => {
 
 export const fetchTaskDetails = async (codes: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/tasks/detail/${codes}`);
+        const response = await fetch(`${getBaseUrl()}/tasks/detail/${codes}`);
         if (!response.ok) {
             throw new Error('Failed to fetch task details');
         }
@@ -85,7 +85,7 @@ export const fetchTaskDetails = async (codes: string) => {
 
 export const changeTaskState = async (id: number, state: string, selectedColors: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/tasks/updateTaskState/${id}?state=${encodeURIComponent(state)}&Colors=${encodeURIComponent(selectedColors)}`, {
+        const response = await fetch(`${getBaseUrl()}/tasks/updateTaskState/${id}?state=${encodeURIComponent(state)}&Colors=${encodeURIComponent(selectedColors)}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -101,7 +101,7 @@ export const changeTaskState = async (id: number, state: string, selectedColors:
 
 export const validteTaskState = async (id: number, state: string, selectedColors: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/tasks/validteTaskState/${id}?state=${encodeURIComponent(state)}&Colors=${encodeURIComponent(selectedColors)}`, {
+        const response = await fetch(`${getBaseUrl()}/tasks/validteTaskState/${id}?state=${encodeURIComponent(state)}&Colors=${encodeURIComponent(selectedColors)}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -122,7 +122,7 @@ export const updateProjectAndTask = async (
     selectedColors: string
 ): Promise<BaseResponse<TaskDTO>> => {
     try {
-        const response = await fetch(`${BASE_URL}/projects/${projectId}/tasks/${taskId}?newState=${encodeURIComponent(newState.toString())}&selectedColors=${encodeURIComponent(selectedColors)}`, {
+        const response = await fetch(`${getBaseUrl()}/projects/${projectId}/tasks/${taskId}?newState=${encodeURIComponent(newState.toString())}&selectedColors=${encodeURIComponent(selectedColors)}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -138,7 +138,7 @@ export const updateProjectAndTask = async (
 
 export const fetchTaskById = async (codes: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/tasks/fetchTaskById/${codes}`);
+        const response = await fetch(`${getBaseUrl()}/tasks/fetchTaskById/${codes}`);
         if (!response.ok) {
             throw new Error('Failed to fetch task details');
         }
@@ -153,7 +153,7 @@ export const fetchTaskById = async (codes: string) => {
 export const updateTask = async (id: string, data: any): Promise<BaseResponse<any>> => {
 
     try {
-        const response = await fetch(`${BASE_URL}/tasks/update/${id}`, {
+        const response = await fetch(`${getBaseUrl()}/tasks/update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json', // Spécifier le type de contenu comme JSON
@@ -176,7 +176,7 @@ export const updateTask = async (id: string, data: any): Promise<BaseResponse<an
 
 export const updateAlerteDate = async (taskId: number, assignedUserId: string): Promise<BaseResponse<TaskDTO>> => {
     try {
-        const response = await fetch(`${BASE_URL}/tasks/updateAlerteDate/${taskId}?newAlerteDate=${assignedUserId}`, {
+        const response = await fetch(`${getBaseUrl()}/tasks/updateAlerteDate/${taskId}?newAlerteDate=${assignedUserId}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json',},
             });
@@ -196,7 +196,7 @@ export const updateAlerteDate = async (taskId: number, assignedUserId: string): 
 
 export const updateUsersTask = async (taskId: number, assignedUserId: number): Promise<BaseResponse<TaskDTO>> => {
     try {
-        const response = await fetch(`${BASE_URL}/tasks/updateUsersTask/${taskId}?assignedUserId=${assignedUserId}`, {
+        const response = await fetch(`${getBaseUrl()}/tasks/updateUsersTask/${taskId}?assignedUserId=${assignedUserId}`, {
             method: 'PUT',
             headers: {'Content-Type': 'application/json',},
             });
@@ -216,7 +216,7 @@ export const updateUsersTask = async (taskId: number, assignedUserId: number): P
 
 export const changeTaskPriority = async (id: number, priority: string, selectedColors: string) => {
     try {
-        const response = await fetch(`${BASE_URL}/tasks/changeTaskPriority/${id}?priority=${encodeURIComponent(priority)}&Colors=${encodeURIComponent(selectedColors)}`, {
+        const response = await fetch(`${getBaseUrl()}/tasks/changeTaskPriority/${id}?priority=${encodeURIComponent(priority)}&Colors=${encodeURIComponent(selectedColors)}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
         });
@@ -251,7 +251,7 @@ export const getFilteredTasks = async (
         if (startDate) params.append('startDate', startDate);
         if (endDate) params.append('endDate', endDate);
 
-        const response = await fetch(`${BASE_URL}/tasks/filter?${params.toString()}`,{
+        const response = await fetch(`${getBaseUrl()}/tasks/filter?${params.toString()}`,{
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`, // Ajoutez le préfixe 'Bearer ' au token JWT
